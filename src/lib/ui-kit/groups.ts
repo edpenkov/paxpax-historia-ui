@@ -5,7 +5,7 @@ import { getUiKitEntriesByCategory, type UiKitEntry } from "@/lib/ui-kit/registr
 export const uiKitGroupOrder: Record<UiKitCategory, string[]> = {
   general: ["Primitives"],
   icons: ["Header", "Settings panel", "Settings menu"],
-  components: ["Screen shell", "Header", "Settings menu", "Map overlay"],
+  components: ["Screen shell", "Header", "Mobile header", "Settings menu", "Map overlay"],
   styles: ["Surfaces", "Animations", "Hover states", "Interaction"],
   dev: ["Dev tools"],
 };

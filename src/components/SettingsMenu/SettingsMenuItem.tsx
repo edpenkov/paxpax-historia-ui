@@ -2,8 +2,8 @@
 
 import { SettingsMenuChevronIcon } from "@/components/SettingsMenu/SettingsMenuChevronIcon";
 import { SettingsMenuItemIcon } from "@/components/SettingsMenu/SettingsMenuItemIcon";
-import { settingsMenuRowLabelClass } from "@/components/SettingsMenu/settingsMenuRowStyles";
-import { settingsMenuReveal } from "@/components/SettingsMenu/settingsMenuReveal";
+import { settingsMenuRowChevronClass, settingsMenuRowIconClass, settingsMenuRowLabelClass } from "@/components/SettingsMenu/settingsMenuRowStyles";
+import { useSettingsMenuReveal } from "@/components/SettingsMenu/SettingsMenuRevealContext";
 import { cn } from "@/lib/cn";
 import { motion } from "motion/react";
 
@@ -15,6 +15,8 @@ type SettingsMenuItemProps = {
 };
 
 export function SettingsMenuItem({ icon, label, onClick, className }: SettingsMenuItemProps) {
+  const settingsMenuReveal = useSettingsMenuReveal();
+
   return (
     <motion.button
       type="button"
@@ -28,13 +30,10 @@ export function SettingsMenuItem({ icon, label, onClick, className }: SettingsMe
         className="flex min-w-0 flex-1 items-center gap-6"
         {...settingsMenuReveal}
       >
-        <SettingsMenuItemIcon
-          name={icon}
-          className="opacity-50 transition-opacity group-hover:opacity-100"
-        />
+        <SettingsMenuItemIcon name={icon} className={settingsMenuRowIconClass} />
         <span className={cn("min-w-0", settingsMenuRowLabelClass)}>{label}</span>
       </motion.div>
-      <SettingsMenuChevronIcon className="pointer-events-none absolute top-1/2 right-4 shrink-0 -translate-y-1/2 opacity-0 transition-opacity duration-[200ms] ease-[var(--ease-ui)] group-hover:opacity-40" />
+      <SettingsMenuChevronIcon className={settingsMenuRowChevronClass} />
     </motion.button>
   );
 }

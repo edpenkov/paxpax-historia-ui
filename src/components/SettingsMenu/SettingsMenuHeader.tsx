@@ -3,12 +3,11 @@
 import { SettingsCloseIcon } from "@/components/SettingsMenu/SettingsCloseIcon";
 import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
-import { settingsMenuReveal } from "@/components/SettingsMenu/settingsMenuReveal";
+import { useSettingsMenuRevealMotion } from "@/components/SettingsMenu/SettingsMenuRevealContext";
 import {
   settingsIconControlHoverClass,
   settingsIconControlIconClass,
 } from "@/components/SettingsMenu/settingsIconControlStyles";
-import { motionRevealTransition, uiTransition } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
@@ -31,14 +30,14 @@ export function SettingsMenuHeader({
   title,
   className,
 }: SettingsMenuHeaderProps) {
+  const revealMotion = useSettingsMenuRevealMotion();
+
   return (
     <div className={cn("shrink-0", className)}>
       <header className="flex items-center gap-3.5 px-4 pt-4">
         <motion.div
           className="flex min-w-0 flex-1 items-baseline gap-3.5"
-          initial={{ opacity: 0, x: -uiTransition.revealOffsetPx }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={motionRevealTransition}
+          {...revealMotion}
         >
           {title ?? (
             <>
@@ -57,9 +56,7 @@ export function SettingsMenuHeader({
             "group/control rounded-[6px] text-icon-primary",
             settingsIconControlHoverClass,
           )}
-          initial={{ opacity: 0, x: -uiTransition.revealOffsetPx }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={motionRevealTransition}
+          {...revealMotion}
         >
           <SettingsCloseIcon className={settingsIconControlIconClass} />
         </motion.button>

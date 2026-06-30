@@ -39,12 +39,18 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "general",
     group: "Primitives",
     kind: "component",
-    description: "1px horizontal rule using text-primary at 10% opacity.",
+    description: "1px rule using text-primary at 10% opacity. Horizontal (default) or vertical.",
     props: [
       {
         name: "className",
         type: "string",
         description: "Additional classes on the hr element.",
+      },
+      {
+        name: "orientation",
+        type: '"horizontal" | "vertical"',
+        defaultValue: '"horizontal"',
+        description: "Vertical: 1px wide, stretches to container height (no vertical margin).",
       },
     ],
     values: [
@@ -110,17 +116,130 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "icons",
     group: "Header",
     kind: "component",
-    description: "20×12 inline SVG menu icon with drop shadow.",
+    description: "20×12 menu icon. Header variant: white + shadow. Control variant: matches settings gear.",
     props: [
       {
         name: "className",
         type: "string",
         description: "Additional classes on the SVG.",
       },
+      {
+        name: "variant",
+        type: '"header" | "control"',
+        defaultValue: '"header"',
+        description: "Control: currentColor + icon opacity (mobile top bar).",
+      },
     ],
     values: [
       { label: "Size", light: "20×12", dark: "20×12" },
-      { label: "Fill", light: "white", dark: "white" },
+      { label: "Fill (header)", light: "white + drop shadow", dark: "same" },
+      { label: "Fill (control)", light: "currentColor (text-icon-primary)", dark: "same" },
+    ],
+  },
+  {
+    id: "mobile-top-controls",
+    name: "MobileTopControls",
+    importPath: "src/components/MobileTopControls/MobileTopControls.tsx",
+    category: "components",
+    group: "Mobile header",
+    kind: "component",
+    description:
+      "Mobile top-left controls: 44×44 menu + 1px divider + 44×44 settings (89px row). Settings panel drops below with 4px gap.",
+    props: [
+      {
+        name: "className",
+        type: "string",
+        description: "Classes on the root wrapper (positioning, etc.).",
+      },
+      {
+        name: "style",
+        type: "CSSProperties",
+        description: "Inline styles on the root wrapper.",
+      },
+      {
+        name: "gameName",
+        type: "string",
+        defaultValue: '"World War II"',
+        description: "Placeholder game name in settings panel header.",
+      },
+      {
+        name: "playAs",
+        type: "string",
+        defaultValue: '"Playing as USA"',
+        description: "Placeholder country line in settings panel header.",
+      },
+      {
+        name: "defaultOpen",
+        type: "boolean",
+        defaultValue: "false",
+        description: "Start with settings panel open (UI Kit / inspection).",
+      },
+    ],
+    values: [
+      { label: "Position", light: "top-1 left-1 (4px)", dark: "same" },
+      { label: "Row size", light: "89×44 (44 + 1 divider + 44)", dark: "same" },
+      { label: "Corner radius", light: "8px outer left (menu) + outer right (settings)", dark: "same" },
+      { label: "Divider", light: "MobileControlDivider — panel surface + text-primary/10 overlay", dark: "same" },
+      { label: "Panel gap", light: "4px (mt-1) below row", dark: "same" },
+      { label: "Panel width", light: "calc(100vw − 8px)", dark: "same" },
+      { label: "Panel radius (open)", light: "12px", dark: "same" },
+      { label: "Visibility", light: "md:hidden", dark: "md:hidden" },
+    ],
+    viewportToggle: true,
+  },
+  {
+    id: "mobile-menu-button",
+    name: "MobileMenuButton",
+    importPath: "src/components/MobileTopControls/MobileMenuButton.tsx",
+    category: "components",
+    group: "Mobile header",
+    kind: "component",
+    description: "44×44 mobile menu trigger with hamburger icon. Placeholder — no handler yet.",
+    props: [
+      {
+        name: "className",
+        type: "string",
+        description: "Additional classes on the button.",
+      },
+      {
+        name: "onClick",
+        type: "() => void",
+        description: "Optional click handler (future mobile nav).",
+      },
+    ],
+    values: [
+      { label: "Size", light: "44×44 (h-11 w-11)", dark: "same" },
+      { label: "Surface", light: "mobileControlSurfaceLeftClass (rounded-l-[8px])", dark: "same" },
+    ],
+  },
+  {
+    id: "mobile-settings-trigger",
+    name: "MobileSettingsTrigger",
+    importPath: "src/components/MobileTopControls/MobileSettingsTrigger.tsx",
+    category: "components",
+    group: "Mobile header",
+    kind: "component",
+    description: "44×44 mobile settings gear trigger. Toggles settings panel open state.",
+    props: [
+      {
+        name: "isOpen",
+        type: "boolean",
+        description: "Whether the settings panel is open (aria-expanded).",
+      },
+      {
+        name: "onClick",
+        type: "() => void",
+        description: "Toggle handler.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Additional classes on the button.",
+      },
+    ],
+    values: [
+      { label: "Size", light: "44×44 (h-11 w-11)", dark: "same" },
+      { label: "Surface", light: "mobileControlSurfaceRightClass (rounded-r-[8px])", dark: "same" },
     ],
   },
   {
@@ -131,7 +250,7 @@ export const uiKitEntries: UiKitEntry[] = [
     group: "Settings menu",
     kind: "component",
     description:
-      "Settings panel. Desktop: 34×34 gear trigger expands to 420px wide, content-driven height.",
+      "Settings panel (desktop). 34×34 gear trigger morphs to 420px wide, content-driven height. Mobile: use MobileTopControls.",
     props: [
       {
         name: "className",
@@ -527,17 +646,17 @@ export const uiKitEntries: UiKitEntry[] = [
     group: "Hover states",
     kind: "style",
     description:
-      "Visual patterns for settings menu rows. Defined inline on components — not extracted to shared utilities yet.",
+      "Visual patterns for settings menu rows. Hover on desktop; max-md group-active mirrors hover on touch.",
     values: [
       {
         label: "Row icon",
-        light: "opacity-50 → 100% on hover",
+        light: "opacity-50 → 100% on hover / mobile active",
         dark: "same",
-        tailwind: "opacity-50 group-hover:opacity-100",
+        tailwind: "settingsMenuRowIconClass",
       },
       {
         label: "Row label",
-        light: "16px, opacity-90 → 100% on hover (200ms)",
+        light: "16px, opacity-90 → 100% on hover / mobile active (200ms)",
         dark: "same",
         tailwind: "settingsMenuRowLabelClass",
       },
@@ -572,16 +691,22 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "styles",
     group: "Animations",
     kind: "style",
-    description: "Motion slide-in for settings menu rows and header text (opacity + x offset).",
+    description:
+      "Motion slide-in for settings menu rows and header. Desktop: opacity + x. Mobile: opacity + y.",
     values: [
       {
-        label: "Initial",
+        label: "Initial (desktop)",
         light: "opacity 0, x −10px",
         dark: "same",
       },
       {
+        label: "Initial (mobile)",
+        light: "opacity 0, y −10px",
+        dark: "same",
+      },
+      {
         label: "Animate",
-        light: "opacity 1, x 0",
+        light: "opacity 1, x/y 0",
         dark: "same",
       },
       {

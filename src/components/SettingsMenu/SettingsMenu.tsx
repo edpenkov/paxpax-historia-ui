@@ -1,25 +1,19 @@
 "use client";
 
 import { SettingsGearIcon } from "@/components/SettingsMenu/SettingsGearIcon";
-import { SettingsMenuHeader } from "@/components/SettingsMenu/SettingsMenuHeader";
-import { SettingsMenuContent } from "@/components/SettingsMenu/SettingsMenuContent";
+import { SettingsMenuPanelContent } from "@/components/SettingsMenu/SettingsMenuPanelContent";
+import { settingsTriggerHoverClass } from "@/components/SettingsMenu/settingsIconControlStyles";
+import {
+  SETTINGS_MENU_PANEL_WIDTH_PX,
+  useSettingsMenuPanel,
+} from "@/components/SettingsMenu/useSettingsMenuPanel";
 import { surfacePanelBaseClass } from "@/lib/surface";
 import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
-import { panelSizeTransitionClass, uiTransition } from "@/lib/transitions";
+import { panelSizeTransitionClass } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import type { CSSProperties } from "react";
 
-const PANEL_WIDTH_PX = 420;
 const TRIGGER_SIZE_PX = 34;
-
-import { settingsTriggerHoverClass } from "@/components/SettingsMenu/settingsIconControlStyles";
 
 type SettingsMenuProps = {
   className?: string;
@@ -32,20 +26,6 @@ type SettingsMenuProps = {
   defaultOpen?: boolean;
 };
 
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
-    const update = () => setIsDesktop(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-
-  return isDesktop;
-}
-
 export function SettingsMenu({
   className,
   style,
@@ -53,52 +33,10 @@ export function SettingsMenu({
   playAs,
   defaultOpen = false,
 }: SettingsMenuProps) {
-  const isDesktop = useIsDesktop();
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [showPanel, setShowPanel] = useState(defaultOpen);
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [animatedHeight, setAnimatedHeight] = useState(TRIGGER_SIZE_PX);
+  const { contentRef, showPanel, isOpen, animatedHeight, open, close } =
+    useSettingsMenuPanel(defaultOpen, "desktop");
 
-  const measurePanelHeight = useCallback(() => {
-    const content = contentRef.current;
-    if (!content) return TRIGGER_SIZE_PX;
-    // offsetHeight at fixed inner width — scrollHeight can over-measure; width must not follow outer clip.
-    return content.offsetHeight;
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!showPanel || !isOpen) return;
-
-    // Wait one frame so height stays at TRIGGER_SIZE_PX before expanding (CSS can't animate `auto`).
-    const frame = requestAnimationFrame(() => {
-      setAnimatedHeight(measurePanelHeight());
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [showPanel, isOpen, gameName, playAs, measurePanelHeight]);
-
-  useEffect(() => {
-    if (!isDesktop && isOpen) {
-      setIsOpen(false);
-      setAnimatedHeight(TRIGGER_SIZE_PX);
-      setShowPanel(false);
-    }
-  }, [isDesktop, isOpen]);
-
-  const open = useCallback(() => {
-    if (!isDesktop) return;
-    setShowPanel(true);
-    setAnimatedHeight(TRIGGER_SIZE_PX);
-    setIsOpen(true);
-  }, [isDesktop]);
-
-  const close = useCallback(() => {
-    setAnimatedHeight(TRIGGER_SIZE_PX);
-    setIsOpen(false);
-    window.setTimeout(() => setShowPanel(false), uiTransition.durationMs);
-  }, []);
-
-  const panelWidth = isOpen ? PANEL_WIDTH_PX : TRIGGER_SIZE_PX;
+  const panelWidth = isOpen ? SETTINGS_MENU_PANEL_WIDTH_PX : TRIGGER_SIZE_PX;
 
   return (
     <div className={cn("relative w-fit", className)} style={style}>
@@ -119,22 +57,13 @@ export function SettingsMenu({
         }}
       >
         {showPanel ? (
-          <div
-            ref={contentRef}
-            className={cn(
-              "flex shrink-0 flex-col",
-              !isOpen && "invisible",
-            )}
-            style={{ width: PANEL_WIDTH_PX }}
-            aria-hidden={!isOpen}
-          >
-            <SettingsMenuHeader
-              gameName={gameName}
-              playAs={playAs}
-              onClose={close}
-            />
-            <SettingsMenuContent />
-          </div>
+          <SettingsMenuPanelContent
+            contentRef={contentRef}
+            gameName={gameName}
+            playAs={playAs}
+            onClose={close}
+            isVisible={isOpen}
+          />
         ) : (
           <button
             type="button"

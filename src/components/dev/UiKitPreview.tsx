@@ -5,6 +5,9 @@ import { HamburgerIcon } from "@/components/DesktopHeader/HamburgerIcon";
 import { GameScreenShell } from "@/components/GameScreen/GameScreenShell";
 import { ProminenceAnchor } from "@/components/ProminenceAnchor/ProminenceAnchor";
 import { SettingsGearIcon } from "@/components/SettingsMenu/SettingsGearIcon";
+import { MobileMenuButton } from "@/components/MobileTopControls/MobileMenuButton";
+import { MobileSettingsTrigger } from "@/components/MobileTopControls/MobileSettingsTrigger";
+import { MobileTopControls } from "@/components/MobileTopControls/MobileTopControls";
 import { SettingsMenu } from "@/components/SettingsMenu/SettingsMenu";
 import { SettingsCloseIcon } from "@/components/SettingsMenu/SettingsCloseIcon";
 import { SettingsMenuHeader } from "@/components/SettingsMenu/SettingsMenuHeader";
@@ -257,7 +260,36 @@ export function UiKitPreview({ entryId, viewport }: UiKitPreviewProps) {
             mapClassName="object-left-top"
             frameClassName="min-h-48"
           >
-            <SettingsMenu className="absolute left-[14px] top-5" defaultOpen />
+            {viewport === "mobile" ? (
+              <MobileTopControls className="absolute top-1 left-1" defaultOpen />
+            ) : (
+              <SettingsMenu className="absolute left-[14px] top-5" defaultOpen />
+            )}
+          </PreviewFrame>
+        );
+
+      case "mobile-top-controls":
+        return (
+          <PreviewFrame
+            mapContext
+            mapClassName="object-left-top"
+            frameClassName="min-h-64"
+          >
+            <MobileTopControls className="absolute top-1 left-1" defaultOpen />
+          </PreviewFrame>
+        );
+
+      case "mobile-menu-button":
+        return (
+          <PreviewFrame mapContext mapClassName="object-left-top">
+            <MobileMenuButton />
+          </PreviewFrame>
+        );
+
+      case "mobile-settings-trigger":
+        return (
+          <PreviewFrame mapContext mapClassName="object-left-top">
+            <MobileSettingsTrigger isOpen={false} onClick={() => undefined} />
           </PreviewFrame>
         );
 
@@ -271,7 +303,12 @@ export function UiKitPreview({ entryId, viewport }: UiKitPreviewProps) {
       case "divider-line":
         return (
           <PreviewFrame className="w-full max-w-xs bg-neutral-900">
-            <DividerLine className="w-full" />
+            <div className="flex h-11 items-stretch gap-0">
+              <div className="h-11 w-11 rounded bg-white/10" />
+              <DividerLine orientation="vertical" />
+              <div className="h-11 w-11 rounded bg-white/10" />
+            </div>
+            <DividerLine className="mt-4 w-full" />
           </PreviewFrame>
         );
 
