@@ -3,7 +3,7 @@
 import { SettingsGearIcon } from "@/components/SettingsMenu/SettingsGearIcon";
 import { SettingsMenuHeader } from "@/components/SettingsMenu/SettingsMenuHeader";
 import { SettingsMenuContent } from "@/components/SettingsMenu/SettingsMenuContent";
-import { surfacePanelClass } from "@/lib/surface";
+import { surfacePanelBaseClass } from "@/lib/surface";
 import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
 import { panelSizeTransitionClass, uiTransition } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
@@ -18,6 +18,8 @@ import {
 
 const PANEL_WIDTH_PX = 420;
 const TRIGGER_SIZE_PX = 34;
+
+import { settingsTriggerHoverClass } from "@/components/SettingsMenu/settingsIconControlStyles";
 
 type SettingsMenuProps = {
   className?: string;
@@ -103,7 +105,14 @@ export function SettingsMenu({
       <div
         role={isOpen ? "dialog" : undefined}
         aria-label={isOpen ? "Settings" : undefined}
-        className={cn(surfacePanelClass, panelSizeTransitionClass, "overflow-hidden")}
+        className={cn(
+          surfacePanelBaseClass,
+          isOpen ? "rounded-[12px]" : "rounded-[6px]",
+          panelSizeTransitionClass,
+          "overflow-hidden",
+          !showPanel && "group/control",
+          !showPanel && settingsTriggerHoverClass,
+        )}
         style={{
           width: panelWidth,
           height: showPanel ? animatedHeight : TRIGGER_SIZE_PX,
@@ -130,10 +139,7 @@ export function SettingsMenu({
           <button
             type="button"
             onClick={open}
-            className={cn(
-              ICON_HITBOX_CLASS,
-              "h-[34px] w-[34px] cursor-pointer",
-            )}
+            className={cn(ICON_HITBOX_CLASS, "h-[34px] w-[34px] cursor-pointer")}
             aria-label="Settings"
             aria-expanded={false}
             aria-haspopup="dialog"

@@ -32,7 +32,7 @@ export function SettingsMenuContent({ className }: SettingsMenuContentProps) {
   return (
     <nav
       aria-label="Settings"
-      className={cn("flex flex-col gap-4 pl-4 pr-1 pt-5 pb-5", className)}
+      className={cn("flex flex-col gap-4 pl-4 pr-1 pt-3 pb-5", className)}
     >
       {MENU_ITEMS.map((item) => (
         <SettingsMenuItem key={item.label} icon={item.icon} label={item.label} />

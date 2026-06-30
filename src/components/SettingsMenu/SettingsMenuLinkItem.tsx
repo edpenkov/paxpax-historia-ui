@@ -2,6 +2,7 @@
 
 import { SettingsExternalLinkIcon } from "@/components/SettingsMenu/SettingsExternalLinkIcon";
 import { SettingsMenuItemIcon } from "@/components/SettingsMenu/SettingsMenuItemIcon";
+import { settingsMenuRowLabelClass } from "@/components/SettingsMenu/settingsMenuRowStyles";
 import { settingsMenuReveal } from "@/components/SettingsMenu/settingsMenuReveal";
 import { cn } from "@/lib/cn";
 import { motion } from "motion/react";
@@ -37,9 +38,7 @@ export function SettingsMenuLinkItem({
           name={icon}
           className="opacity-50 transition-opacity group-hover:opacity-100"
         />
-        <span className="min-w-0 text-base font-normal text-text-primary opacity-90 transition-opacity group-hover:opacity-100">
-          {label}
-        </span>
+        <span className={cn("min-w-0", settingsMenuRowLabelClass)}>{label}</span>
       </motion.div>
       <SettingsExternalLinkIcon className="pointer-events-none absolute top-1/2 right-4 shrink-0 -translate-y-1/2 opacity-40 transition-opacity group-hover:opacity-100" />
     </motion.a>

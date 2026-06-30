@@ -12,7 +12,7 @@ export function SettingsMenuItemIcon({ name, className }: SettingsMenuItemIconPr
   return (
     <span
       aria-hidden
-      className={cn("inline-block h-[18px] w-[18px] shrink-0 bg-icon-primary", className)}
+      className={cn("inline-block h-4 w-4 shrink-0 bg-icon-primary", className)}
       style={{
         maskImage: `url(${src})`,
         WebkitMaskImage: `url(${src})`,

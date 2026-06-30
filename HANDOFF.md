@@ -206,7 +206,11 @@ Settings panel (`src/components/SettingsMenu/`). Client component. **Desktop onl
 
 **Open (desktop):** panel width **420px**, height **content-driven** (200ms width + height transition). `SettingsMenuHeader` + `SettingsMenuContent`.
 
-**Menu content:** 20px below header divider, 16px left / 4px right padding, 20px bottom. Rows: 18×18 icon (50% opacity) + 24px gap + 16px label (90% opacity). 16px between rows. External-link arrow: vertically centered, 20px from panel right.
+**Menu content:** 12px below header divider, 16px left / 4px right padding, 20px bottom. Rows: 16×16 icon (50% opacity) + 24px gap + 16px label (90% opacity). 16px between rows. External-link arrow: vertically centered, 20px from panel right.
+
+**Closed trigger hover:** 10% inset fill on the rounded panel shell. Gear icon 75% / 90% (dark), 100% on hover.
+
+**Close button:** 24×24 hitbox, same inset hover fill + icon opacity as gear (`settingsIconControlStyles.ts`).
 
 ### `DividerLine/`
 

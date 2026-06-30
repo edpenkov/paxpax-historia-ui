@@ -4,6 +4,10 @@ import { SettingsCloseIcon } from "@/components/SettingsMenu/SettingsCloseIcon";
 import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
 import { settingsMenuReveal } from "@/components/SettingsMenu/settingsMenuReveal";
+import {
+  settingsIconControlHoverClass,
+  settingsIconControlIconClass,
+} from "@/components/SettingsMenu/settingsIconControlStyles";
 import { motionRevealTransition, uiTransition } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
 import { motion } from "motion/react";
@@ -48,12 +52,16 @@ export function SettingsMenuHeader({
           type="button"
           onClick={onClose}
           aria-label="Close settings"
-          className={cn(ICON_HITBOX_CLASS, "text-icon-primary")}
+          className={cn(
+            ICON_HITBOX_CLASS,
+            "group/control rounded-[6px] text-icon-primary",
+            settingsIconControlHoverClass,
+          )}
           initial={{ opacity: 0, x: -uiTransition.revealOffsetPx }}
           animate={{ opacity: 1, x: 0 }}
           transition={motionRevealTransition}
         >
-          <SettingsCloseIcon />
+          <SettingsCloseIcon className={settingsIconControlIconClass} />
         </motion.button>
       </header>
 

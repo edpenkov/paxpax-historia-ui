@@ -10,9 +10,9 @@ export const uiTransition = {
   iconHitboxPx: 24,
 } as const;
 
-/** Panel width + height — height must be a px value (not `auto`) to animate. */
+/** Panel width + height + corner radius — height must be a px value (not `auto`) to animate. */
 export const panelSizeTransitionClass =
-  "transition-[width,height] duration-[var(--duration-ui)] ease-[var(--ease-ui)]";
+  "transition-[width,height,border-radius] duration-[var(--duration-ui)] ease-[var(--ease-ui)]";
 
 export const motionRevealTransition = {
   duration: uiTransition.durationMs / 1000,

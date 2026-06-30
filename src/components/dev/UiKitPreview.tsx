@@ -284,7 +284,7 @@ export function UiKitPreview({ entryId, viewport }: UiKitPreviewProps) {
 
       case "settings-gear-icon":
         return (
-          <PreviewFrame>
+          <PreviewFrame className="group/control bg-background-primary">
             <SettingsGearIcon />
           </PreviewFrame>
         );

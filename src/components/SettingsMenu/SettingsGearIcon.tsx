@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { settingsIconControlIconClass } from "@/components/SettingsMenu/settingsIconControlStyles";
 
 type SettingsGearIconProps = {
   className?: string;
@@ -14,7 +15,8 @@ export function SettingsGearIcon({ className }: SettingsGearIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
       className={cn(
-        "h-[18px] w-[18px] shrink-0 text-icon-primary/75 dark:text-icon-primary",
+        "h-[18px] w-[18px] shrink-0 text-icon-primary",
+        settingsIconControlIconClass,
         className,
       )}
     >

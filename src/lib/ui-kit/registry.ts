@@ -164,14 +164,20 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
     values: [
       { label: "Trigger size", light: "34×34", dark: "34×34" },
+      {
+        label: "Trigger hover",
+        light: "10% black inset fill",
+        dark: "10% white inset fill",
+      },
       { label: "Panel width (desktop)", light: "420px", dark: "420px" },
       { label: "Panel height (desktop)", light: "content-driven (px animated)", dark: "same" },
       {
         label: "Open transition",
-        light: "width + height, var(--duration-ui) var(--ease-ui)",
+        light: "width + height + border-radius, var(--duration-ui) var(--ease-ui)",
         dark: "same",
       },
-      { label: "Border radius", light: "6px", dark: "6px" },
+      { label: "Border radius (closed)", light: "6px", dark: "6px" },
+      { label: "Border radius (open)", light: "12px", dark: "12px" },
       { label: "Gear icon size", light: "18×18", dark: "18×18" },
       {
         label: "Game placement",
@@ -198,6 +204,8 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
     values: [
       { label: "Size", light: "18×18", dark: "18×18" },
+      { label: "Opacity", light: "75%", dark: "90%" },
+      { label: "Hover opacity", light: "100% (group/control)", dark: "same" },
       { label: "Source", light: "public/settings-gear.svg", dark: "same" },
     ],
   },
@@ -218,6 +226,9 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
     values: [
       { label: "Size", light: "14×14", dark: "14×14" },
+      { label: "Hitbox", light: "24×24 (header close button)", dark: "same" },
+      { label: "Opacity", light: "75%", dark: "90%" },
+      { label: "Hover", light: "inset fill, icon 100%", dark: "same" },
     ],
   },
   {
@@ -242,7 +253,7 @@ export const uiKitEntries: UiKitEntry[] = [
       },
     ],
     values: [
-      { label: "Size", light: "18×18", dark: "18×18" },
+      { label: "Size", light: "16×16", dark: "16×16" },
       {
         label: "Asset names",
         light:
@@ -268,6 +279,26 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
     values: [
       { label: "Size", light: "9×9", dark: "9×9" },
+      { label: "Stroke", light: "currentColor (text-icon-primary)", dark: "same" },
+    ],
+  },
+  {
+    id: "settings-chevron-icon",
+    name: "SettingsMenuChevronIcon",
+    importPath: "src/components/SettingsMenu/SettingsMenuChevronIcon.tsx",
+    category: "icons",
+    group: "Settings menu",
+    kind: "component",
+    description: "7×11 right chevron for settings menu button rows (hover only).",
+    props: [
+      {
+        name: "className",
+        type: "string",
+        description: "Additional classes on the SVG.",
+      },
+    ],
+    values: [
+      { label: "Size", light: "7×11", dark: "7×11" },
       { label: "Stroke", light: "currentColor (text-icon-primary)", dark: "same" },
     ],
   },
@@ -326,7 +357,7 @@ export const uiKitEntries: UiKitEntry[] = [
       },
     ],
     values: [
-      { label: "Padding", light: "pl-4 pr-1 pt-5 pb-5", dark: "same" },
+      { label: "Padding", light: "pl-4 pr-1 pt-3 pb-5", dark: "same" },
       { label: "Row gap", light: "16px (gap-4)", dark: "same" },
       { label: "Menu rows", light: "5 (button)", dark: "same" },
       { label: "Link rows", light: "2 (external)", dark: "same" },
@@ -339,7 +370,7 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "components",
     group: "Settings menu",
     kind: "component",
-    description: "Settings menu button row — icon + label with slide-in reveal.",
+    description: "Settings menu button row — icon + label with slide-in reveal and hover chevron.",
     props: [
       {
         name: "icon",
@@ -362,7 +393,10 @@ export const uiKitEntries: UiKitEntry[] = [
         description: "Additional classes on the button.",
       },
     ],
-    notes: ["Row opacity values documented under Styles → settings menu rows."],
+    notes: [
+      "Row opacity values documented under Styles → settings menu rows.",
+      "Chevron (7×11) at right-4, hidden until hover, then opacity-40 (matches link arrow at rest).",
+    ],
   },
   {
     id: "settings-menu-link-item",
@@ -455,11 +489,12 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "styles",
     group: "Animations",
     kind: "style",
-    description: "Width + height transition for expanding panels. Height must be a px value to animate.",
+    description: "Width + height + border-radius transition for expanding panels. Height must be a px value to animate.",
     values: [
       {
         label: "Classes",
-        light: "transition-[width,height] duration-[var(--duration-ui)] ease-[var(--ease-ui)]",
+        light:
+          "transition-[width,height,border-radius] duration-[var(--duration-ui)] ease-[var(--ease-ui)]",
         dark: "same",
         tailwind: "panelSizeTransitionClass",
       },
@@ -502,9 +537,9 @@ export const uiKitEntries: UiKitEntry[] = [
       },
       {
         label: "Row label",
-        light: "16px, opacity-90 → 100% on hover",
+        light: "16px, opacity-90 → 100% on hover (200ms)",
         dark: "same",
-        tailwind: "text-base opacity-90 group-hover:opacity-100",
+        tailwind: "settingsMenuRowLabelClass",
       },
       {
         label: "Header play-as",
