@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Pax Historia UI",
+  title: "PaxPax Historia UI",
   description: "Standalone UI reference for Pax Historia",
 };
 

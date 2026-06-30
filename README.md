@@ -1,4 +1,4 @@
-# Pax Historia UI
+# PaxPax Historia UI
 
 Standalone UI reference for [Pax Historia](https://www.paxhistoria.co/). Built with Next.js, TypeScript, Tailwind CSS, and Motion. Intended for handoff to the client team via GitHub — they integrate components into their main app using Cursor agents.
 

@@ -1,6 +1,6 @@
 # Handoff checklist
 
-Use this when integrating Pax Historia UI into the main Next.js codebase.
+Use this when integrating PaxPax Historia UI into the main Next.js codebase.
 
 ## Prerequisites
 

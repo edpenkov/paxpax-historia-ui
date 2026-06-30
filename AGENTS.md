@@ -1,4 +1,4 @@
-# AGENTS.md — Pax Historia UI
+# AGENTS.md — PaxPax Historia UI
 
 Standalone UI reference for [Pax Historia](https://www.paxhistoria.co/). Not integrated with backend, auth, or data layers. The client team copies components and routes into their Next.js app using Cursor agents.
 

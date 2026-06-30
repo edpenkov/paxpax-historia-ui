@@ -1,11 +1,11 @@
 ---
-description: Component organization and UI conventions for Pax Historia UI
+description: Component organization and UI conventions for PaxPax Historia UI
 alwaysApply: true
 ---
 
 # Component Conventions
 
-This repo is an early-stage UI reference for Pax Historia. Build in any order — no design-system phases.
+This repo is an early-stage UI reference for PaxPax Historia UI. Build in any order — no design-system phases.
 
 ## Rules
 
