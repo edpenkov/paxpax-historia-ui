@@ -80,18 +80,39 @@ Current contents and meaning:
 ```css
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --surface-primary: rgba(221, 234, 243, 0.8);
+  --icon-primary: #00021e;
+  --text-primary: #00021e;
+}
+.dark {
+  --surface-primary: rgba(0, 0, 0, 0.86);
+  --icon-primary: #ffffff;
+  --text-primary: #ffffff;
+}
+
 @theme inline {
   --font-sans: var(--font-poppins);
+  --color-surface-primary: var(--surface-primary);
+  --color-icon-primary: var(--icon-primary);
+  --color-text-primary: var(--text-primary);
 }
-html, body { height: 100%; overflow: hidden; }
-body { font-family: var(--font-poppins), sans-serif; }
 ```
 
-- **Tailwind v4** entry via `@import`, not a legacy `tailwind.config` theme file
-- **`dark` variant** expects a `.dark` class on an ancestor (matches `next-themes` `attribute="class"`)
-- **`--font-sans`** maps Tailwind `font-sans` to Poppins
-- **`overflow: hidden`** on `html`/`body` — full-viewport game screen, no page scroll
-- No color CSS variables or semantic tokens yet — colors are hard-coded in components where used
+**Primary UI tokens** (light / dark via `.dark`):
+
+| Token | Tailwind | Light | Dark |
+|-------|----------|-------|------|
+| Surface | `bg-surface-primary` | `rgba(221,234,243,0.8)` | `rgba(0,0,0,0.86)` |
+| Icon | `bg-icon-primary`, `text-icon-primary` | `#00021E` | `#fff` |
+| Text | `text-text-primary` | `#00021E` | `#fff` |
+
+Panel chrome also uses `backdrop-blur-[20px]` + `rounded-[6px]` — see `src/lib/surface.ts` (`surfacePanelClass`).
+
+- **Tailwind v4** entry via `@import`
+- **`dark` variant** — `next-themes` `attribute="class"`
+- **`overflow: hidden`** on `html`/`body` — full-viewport game screen
 
 ---
 
@@ -168,6 +189,16 @@ Reusable blurred dark region to darken/blur the map under UI. Rendered in a **de
 
 `GameScreenShell` (client) owns map layer, prominence layer, and UI layer stacking.
 
+### `SettingsMenu/` + `SettingsGearIcon.tsx`
+
+Settings entry point (`src/components/SettingsMenu/`). Client component.
+
+**Placement** (`page.tsx`): `absolute left-5 top-[68px] z-10` — 20px below 48px header, 20px from left.
+
+**Trigger:** 34×34 button with `surfacePanelClass` (`backdrop-blur-[20px]`, `bg-surface-primary`, `rounded-[6px]`). 18×18 inline SVG gear (`SettingsGearIcon`), `fill="currentColor"` + `text-icon-primary`.
+
+**Future:** root wrapper is `relative w-fit` so the same surface expands into a full settings panel (not implemented yet). Button has `aria-haspopup="dialog"` / `aria-expanded={false}` for next step.
+
 ### `providers/ThemeProvider.tsx`
 
 Client component (`"use client"`). Thin wrapper around `next-themes`:
@@ -190,6 +221,15 @@ twMerge(clsx(...inputs))
 
 Used for conditional Tailwind class composition. Import: `@/lib/cn`.
 
+### `surface.ts`
+
+```ts
+export const surfacePanelClass =
+  "rounded-[6px] backdrop-blur-[20px] bg-surface-primary";
+```
+
+Shared primary panel chrome — settings trigger, future modals/panels.
+
 ---
 
 ## Static assets (`public/assets/`)
@@ -197,6 +237,7 @@ Used for conditional Tailwind class composition. Import: `@/lib/cn`.
 | File | URL | Used by |
 |------|-----|---------|
 | `background.png` | `/assets/background.png` | `GameScreen` |
+| `settings-gear.svg` | `/settings-gear.svg` | Source reference for `SettingsGearIcon` (inlined in component) |
 
 Files in `public/` are served as-is from the site root. Any component referencing `/assets/...` requires the corresponding file in the target project's public/static serving setup.
 
@@ -286,7 +327,8 @@ layout.tsx
 page.tsx
   └── GameScreen.tsx
         ├── /assets/background.png (placeholder — static map stand-in)
-        └── DesktopHeader.tsx
+        ├── DesktopHeader.tsx
+        └── SettingsMenu.tsx → SettingsGearIcon, surfacePanelClass
 ```
 
 ---
