@@ -6,6 +6,12 @@
   --font-sans: var(--font-poppins);
 }
 
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font-poppins), sans-serif;
 }

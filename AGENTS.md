@@ -1,24 +1,24 @@
 # AGENTS.md — PaxPax Historia UI
 
-Standalone UI reference for [Pax Historia](https://www.paxhistoria.co/). Not integrated with backend, auth, or data layers. The client team copies components and routes into their Next.js app using Cursor agents.
+Standalone UI reference for [Pax Historia](https://www.paxhistoria.co/). Not integrated with backend, auth, or data layers.
+
+Parts of this repo are **placeholders** (static map image, mock data, etc.) — visual stand-ins for production dynamic content. See [HANDOFF.md](./HANDOFF.md#placeholders-vs-production).
 
 ## Repo structure
 
 ```
 src/
-  app/              Next.js routes — copy relevant routes to client app
-  components/       Custom React components — primary handoff target
+  app/              Next.js App Router — routes and root layout
+  components/       Custom React components
   lib/cn.ts         Class name utility (clsx + tailwind-merge)
   hooks/            Shared hooks (add as needed)
-docs/reference/     Design screenshots — do NOT copy to client repo
-public/assets/      SVGs and images
+docs/reference/     Design screenshots — not imported by app code
+public/assets/      Static files served at /assets/*
 ```
 
-## Dependencies to add in client repo
+## Dependencies in this repo
 
-```bash
-npm install motion next-themes clsx tailwind-merge
-```
+Listed in `package.json`. Runtime deps used in code today: `next-themes`, `clsx`, `tailwind-merge`. `motion` is installed but not yet imported by any component.
 
 ## Component organization
 
@@ -39,19 +39,11 @@ npm install motion next-themes clsx tailwind-merge
 - `next-themes` with `attribute="class"` (provider wired; color tokens added per screen)
 - Use `cn()` from `@/lib/cn`
 
-## What to copy
+## Repo-only files
 
-| Copy | Skip |
+| Path | Role |
 |------|------|
-| `src/components/**` | `docs/reference/` |
-| Relevant `src/app/**` routes | `.cursor/` |
-| `src/lib/cn.ts` | Dev-only files |
-| Theme-related CSS from `globals.css` when defined | Mock data (replace with real API) |
+| `docs/reference/` | Design screenshots — not imported by app code |
+| `.cursor/` | Cursor agent rules for this repo |
 
-## What to wire on the client side
-
-- Replace placeholder handlers and mock data with real auth/API
-- Merge `globals.css` theme variables when they exist
-- Ensure `ThemeProvider` wraps the app (same pattern as `src/components/providers/ThemeProvider.tsx`)
-
-See [HANDOFF.md](./HANDOFF.md) for a step-by-step checklist.
+See [HANDOFF.md](./HANDOFF.md) for full project structure, component inventory, dependencies, and import graph.

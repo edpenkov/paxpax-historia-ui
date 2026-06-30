@@ -18,6 +18,17 @@ This repo is an early-stage UI reference for PaxPax Historia UI. Build in any or
 7. **Custom components only** — no HeroUI, shadcn, or other UI libraries
 8. **No pre-built stubs** — add components only when building a real screen
 
+## Placeholders
+
+Many parts of this repo are **UI placeholders** — simplified stand-ins for layout and visuals, not production behavior.
+
+- Example: `GameScreen` uses a static `<img>` for the map; production Pax Historia uses a live interactive map.
+- Placeholders may use static assets, hard-coded copy, or empty handlers.
+- When building or documenting, note placeholder status (in code comments sparingly, and in `HANDOFF.md` inventory).
+- In production handoff, placeholders are either **ignored** (real system already exists) or **replaced** (keep layout/styling, wire real data).
+
+Do not over-engineer placeholder implementations — keep them minimal unless the user asks for more.
+
 ## Stack reminders
 
 - TypeScript, Next.js App Router, Tailwind CSS v4, `motion`, `next-themes`
@@ -25,6 +36,16 @@ This repo is an early-stage UI reference for PaxPax Historia UI. Build in any or
 - Use `cn()` from `@/lib/cn` for class names
 - Add `'use client'` when using motion or browser-only APIs
 
-## When advising
+## When advising — ask before assuming
 
 Do not impose token/component phases. Suggest extraction only when a pattern repeats. Reference screenshots in `docs/reference/`.
+
+**Ask the user** (briefly, 1–2 focused questions) when:
+
+- Component **purpose or boundary** is unclear — e.g. is this a one-off screen section or a reusable pattern?
+- Two components look **similar** and might be merged, split, or share a base — propose options, don't silently duplicate
+- Something looks like it should be **dynamic in production** but you're unsure what to placeholder — confirm what to mock vs skip
+- **Naming or folder placement** is ambiguous — e.g. `patterns/` vs `components/`, screen-specific vs shared
+- You notice **overlap with production concerns** (map, auth, game state) — clarify this repo stays visual-only
+
+Share concerns openly: duplication, unclear props API, missing responsive behavior, or anything that would confuse a future integrator. Update `HANDOFF.md` inventory when adding non-trivial components.
