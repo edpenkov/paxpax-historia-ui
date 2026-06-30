@@ -1,0 +1,30 @@
+---
+description: Component organization and UI conventions for Pax Historia UI
+alwaysApply: true
+---
+
+# Component Conventions
+
+This repo is an early-stage UI reference for Pax Historia. Build in any order — no design-system phases.
+
+## Rules
+
+1. **One file = one component** in its own folder when non-trivial: `components/SettingRow/SettingRow.tsx`
+2. **Props-first:** put anything that can change into props (label, icon, onClick, variant, isActive)
+3. **Composition:** compose screens from small components; avoid 400-line monolith JSX
+4. **Hard-code first, extract later:** a hex color in a component is OK; extract to a CSS variable or `variant` prop after 3+ repeats
+5. **Theme:** use Tailwind `dark:` and CSS variables in `globals.css` when colors stabilize — not required on day one
+6. **Responsive — desktop-first:** desktop layout in base classes; overrides via `max-xl:`, `max-lg:`, `max-md:` (not mobile-first `sm:` as default)
+7. **Custom components only** — no HeroUI, shadcn, or other UI libraries
+8. **No pre-built stubs** — add components only when building a real screen
+
+## Stack reminders
+
+- TypeScript, Next.js App Router, Tailwind CSS v4, `motion`, `next-themes`
+- Font: Poppins only (via `next/font`)
+- Use `cn()` from `@/lib/cn` for class names
+- Add `'use client'` when using motion or browser-only APIs
+
+## When advising
+
+Do not impose token/component phases. Suggest extraction only when a pattern repeats. Reference screenshots in `docs/reference/`.
