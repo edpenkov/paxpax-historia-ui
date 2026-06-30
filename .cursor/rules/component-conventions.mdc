@@ -17,6 +17,8 @@ This repo is an early-stage UI reference for PaxPax Historia UI. Build in any or
 6. **Responsive — desktop-first:** desktop layout in base classes; overrides via `max-xl:`, `max-lg:`, `max-md:` (not mobile-first `sm:` as default)
 7. **Custom components only** — no HeroUI, shadcn, or other UI libraries
 8. **No pre-built stubs** — add components only when building a real screen
+9. **Icon hit targets** — clickable icons use at least **24×24px** hitbox (`ICON_HITBOX_CLASS` from `@/lib/icon-hitbox`); icon graphic stays centered inside
+10. **Transitions** — use tokens from `@/lib/transitions` + CSS vars in `globals.css`; list in `variables.ts` for UI Kit
 
 ## Placeholders
 
@@ -60,9 +62,11 @@ Tools for visually inspecting this repo while building — **not part of game UI
 **When adding or changing UI building blocks**, always update:
 
 - `src/lib/ui-kit/registry.ts` — metadata (name, path, category, props, values, notes, `viewportToggle`)
-- `src/lib/ui-kit/variables.ts` — global CSS variables (when adding tokens to `globals.css`)
+- `src/lib/ui-kit/variables.ts` — global CSS variables (when adding tokens to `globals.css`) and transition tokens
 - `src/components/dev/UiKitPreview.tsx` — live preview for that entry (if previewable)
 - `HANDOFF.md` — routes and component inventory
 
-Registry categories (tabs): `general`, `icons`, `components`, `dev`, plus a **Variables** tab from `variables.ts`.
+Registry categories (tabs): `general`, `icons`, `components`, `styles`, `dev`, plus a **Variables** tab from `variables.ts`.
+Set optional `group` on each registry entry; section order per tab lives in `src/lib/ui-kit/groups.ts`.
 Set `viewportToggle: true` on responsive components so UI Kit shows Desktop / Mobile preview.
+Put shared class strings and visual patterns in **Styles**; keep color/motion tokens in **Variables**.

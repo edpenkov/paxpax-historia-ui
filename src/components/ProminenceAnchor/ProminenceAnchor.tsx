@@ -14,48 +14,66 @@ type ProminenceAnchorProps = {
   className?: string;
 };
 
-/**
- * Wraps UI that should read prominently over the map. Backdrop is portaled into
- * the z-[1] prominence layer (above map, below all other UI).
- */
+type BackdropRect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
+
+function rectsEqual(a: BackdropRect | null, b: BackdropRect) {
+  return (
+    a !== null &&
+    a.top === b.top &&
+    a.left === b.left &&
+    a.width === b.width &&
+    a.height === b.height
+  );
+}
+
 export function ProminenceAnchor({ children, expand, className }: ProminenceAnchorProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
-  const prominenceLayer = useProminenceLayer();
-  const [backdropRect, setBackdropRect] = useState<{
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null>(null);
+  const { layer: prominenceLayer, coordinates } = useProminenceLayer();
+  const [backdropRect, setBackdropRect] = useState<BackdropRect | null>(null);
 
   useLayoutEffect(() => {
     const anchor = anchorRef.current;
     if (!anchor || !prominenceLayer) return;
 
     const update = () => {
-      const layer = prominenceLayer;
       const anchorBox = anchor.getBoundingClientRect();
-      const layerBox = layer.getBoundingClientRect();
+      const layerBox =
+        coordinates === "layer" ? prominenceLayer.getBoundingClientRect() : null;
 
-      setBackdropRect({
-        top: anchorBox.top - layerBox.top - expand.top,
-        left: anchorBox.left - layerBox.left - expand.left,
+      const next: BackdropRect = {
+        top: anchorBox.top - (layerBox?.top ?? 0) - expand.top,
+        left: anchorBox.left - (layerBox?.left ?? 0) - expand.left,
         width: anchorBox.width + expand.left + expand.right,
         height: anchorBox.height + expand.top + expand.bottom,
-      });
+      };
+
+      setBackdropRect((prev) => (rectsEqual(prev, next) ? prev : next));
     };
 
     update();
 
     const observer = new ResizeObserver(update);
     observer.observe(anchor);
+    if (coordinates === "layer") observer.observe(prominenceLayer);
     window.addEventListener("resize", update);
 
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", update);
     };
-  }, [prominenceLayer, expand.top, expand.right, expand.bottom, expand.left]);
+  }, [
+    prominenceLayer,
+    coordinates,
+    expand.top,
+    expand.right,
+    expand.bottom,
+    expand.left,
+  ]);
 
   return (
     <>

@@ -3,13 +3,15 @@
 import { UiKitPreview, type UiKitViewport } from "@/components/dev/UiKitPreview";
 import { UiKitVariablesPanel } from "@/components/dev/UiKitVariablesPanel";
 import { uiKitTabs, type UiKitTabId } from "@/lib/ui-kit/categories";
-import { getUiKitEntriesByCategory, type UiKitEntry } from "@/lib/ui-kit/registry";
+import { getUiKitEntriesGrouped, type UiKitEntryGroup } from "@/lib/ui-kit/groups";
+import type { UiKitEntry } from "@/lib/ui-kit/registry";
 import { cn } from "@/lib/cn";
 import { useState } from "react";
 
 const kindLabel: Record<UiKitEntry["kind"], string> = {
   component: "Component",
   utility: "Utility",
+  style: "Style",
   dev: "Dev tool",
 };
 
@@ -225,44 +227,65 @@ function UiKitTabBar({
   );
 }
 
-function UiKitContentsNav({ entries }: { entries: UiKitEntry[] }) {
-  if (entries.length === 0) return null;
+function groupSectionId(label: string) {
+  return `group-${label.toLowerCase().replace(/\s+/g, "-")}`;
+}
+
+function UiKitContentsNav({ groups }: { groups: UiKitEntryGroup[] }) {
+  if (groups.length === 0) return null;
 
   return (
     <nav className="mb-8 rounded-lg border border-black/10 bg-black/[0.02] p-4 dark:border-white/10 dark:bg-white/[0.03]">
-      <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-black/45 dark:text-white/45">
+      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-black/45 dark:text-white/45">
         Contents
       </h2>
-      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-        {entries.map((entry) => (
-          <li key={entry.id}>
-            <a href={`#${entry.id}`} className="hover:underline">
-              {entry.name}
+      <div className="space-y-4">
+        {groups.map((group) => (
+          <div key={group.label}>
+            <a
+              href={`#${groupSectionId(group.label)}`}
+              className="text-xs font-semibold uppercase tracking-wide text-black/45 hover:text-black dark:text-white/45 dark:hover:text-white"
+            >
+              {group.label}
             </a>
-          </li>
+            <ul className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              {group.entries.map((entry) => (
+                <li key={entry.id}>
+                  <a href={`#${entry.id}`} className="hover:underline">
+                    {entry.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+      </div>
     </nav>
   );
 }
 
 export function UiKitView() {
   const [activeTab, setActiveTab] = useState<UiKitTabId>("general");
-  const activeEntries =
-    activeTab === "variables" ? [] : getUiKitEntriesByCategory(activeTab);
+  const activeGroups =
+    activeTab === "variables" ? [] : getUiKitEntriesGrouped(activeTab);
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-10 pb-24 text-text-primary">
       <header className="mb-10">
         <h1 className="mb-3 text-2xl font-semibold">UI Kit</h1>
         <p className="max-w-2xl text-sm text-black/65 dark:text-white/65">
-          Living catalog of components, tokens, and dev tools. Update{" "}
+          Living catalog of components, icons, styles, tokens, and dev tools.
+          Update{" "}
           <code className="rounded bg-black/5 px-1 py-0.5 text-xs dark:bg-white/10">
             src/lib/ui-kit/registry.ts
-          </code>{" "}
-          and{" "}
+          </code>
+          ,{" "}
           <code className="rounded bg-black/5 px-1 py-0.5 text-xs dark:bg-white/10">
             src/lib/ui-kit/variables.ts
+          </code>
+          , and previews in{" "}
+          <code className="rounded bg-black/5 px-1 py-0.5 text-xs dark:bg-white/10">
+            UiKitPreview.tsx
           </code>{" "}
           when adding UI.
         </p>
@@ -274,10 +297,19 @@ export function UiKitView() {
         <UiKitVariablesPanel />
       ) : (
         <>
-          <UiKitContentsNav entries={activeEntries} />
-          <div className="space-y-8">
-            {activeEntries.map((entry) => (
-              <UiKitEntryCard key={entry.id} entry={entry} />
+          <UiKitContentsNav groups={activeGroups} />
+          <div className="space-y-12">
+            {activeGroups.map((group) => (
+              <section key={group.label} id={groupSectionId(group.label)} className="scroll-mt-6">
+                <h2 className="mb-6 border-b border-black/10 pb-2 text-sm font-semibold uppercase tracking-wide text-black/45 dark:border-white/10 dark:text-white/45">
+                  {group.label}
+                </h2>
+                <div className="space-y-8">
+                  {group.entries.map((entry) => (
+                    <UiKitEntryCard key={entry.id} entry={entry} />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         </>

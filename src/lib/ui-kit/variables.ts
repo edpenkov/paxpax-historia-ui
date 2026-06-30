@@ -30,3 +30,32 @@ export const globalCssVariables: GlobalCssVariable[] = [
     tailwind: "text-text-primary",
   },
 ];
+
+export type GlobalTransitionVariable = {
+  cssVar: string;
+  label: string;
+  value: string;
+  notes?: string;
+};
+
+/** Transition tokens — sync with `src/lib/transitions.ts` and `globals.css`. */
+export const globalTransitionVariables: GlobalTransitionVariable[] = [
+  {
+    cssVar: "--duration-ui",
+    label: "UI duration",
+    value: "200ms",
+    notes: "Panel size, general UI transitions",
+  },
+  {
+    cssVar: "--ease-ui",
+    label: "UI easing",
+    value: "ease",
+    notes: "CSS easing for width/height etc.",
+  },
+  {
+    cssVar: "--reveal-offset",
+    label: "Reveal offset",
+    value: "10px",
+    notes: "Header text/icon slide-in (motion uses px from transitions.ts)",
+  },
+];

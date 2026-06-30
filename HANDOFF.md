@@ -109,7 +109,13 @@ Current contents and meaning:
 | Icon | `bg-icon-primary`, `text-icon-primary` | `#00021E` | `#fff` |
 | Text | `text-text-primary` | `#00021E` | `#fff` |
 
-Panel chrome also uses `backdrop-blur-[20px]` + `rounded-[6px]` — see `src/lib/surface.ts` (`surfacePanelClass`). Full variable list: `/ui-kit` → Variables tab (`src/lib/ui-kit/variables.ts`).
+Panel chrome: `backdrop-blur-[20px]` + `rounded-[6px]` + `bg-background-primary` — see `src/lib/surface.ts` (`surfacePanelClass`). Used on triggers **and** expanded panels.
+
+**Prominence layer:** `fixed inset-0 z-[1]` with viewport-coordinate backdrops. UI layer uses `isolate` at z-10.
+
+**Transition tokens** (`src/lib/transitions.ts` + CSS vars): `--duration-ui` (200ms), `--ease-ui` (ease), `--reveal-offset` (10px). UI Kit → Variables tab.
+
+Full color variable list: `/ui-kit` → Variables tab (`src/lib/ui-kit/variables.ts`).
 
 - **Tailwind v4** entry via `@import`
 - **`dark` variant** — `next-themes` `attribute="class"`
@@ -172,7 +178,7 @@ Used in `page.tsx` as a child of `GameScreen`.
 
 ### `ProminenceAnchor/` + `ProminenceBackdropPlaced.tsx`
 
-Reusable blurred dark region to darken/blur the map under UI. Rendered in a **dedicated layer** (`z-[1]`) — above the map, **below all UI** (`z-10`, including header border). Backdrops are portaled from `ProminenceAnchor` so they never paint over sibling UI.
+Reusable blurred dark region to darken/blur the map under UI. Portaled into z-[1] prominence layer (above map, below UI). Game screen: `fixed inset-0` + viewport coords. UI Kit previews: `containProminence` on `GameScreenShell` for an absolute in-shell layer.
 
 **Two-layer effect** (separate elements — do not combine on one node):
 
@@ -190,15 +196,21 @@ Reusable blurred dark region to darken/blur the map under UI. Rendered in a **de
 
 `GameScreenShell` (client) owns map layer, prominence layer, and UI layer stacking.
 
-### `SettingsMenu/` + `SettingsGearIcon.tsx`
+### `SettingsMenu/` (+ `SettingsMenuHeader`, `SettingsGearIcon`, `SettingsCloseIcon`)
 
-Settings entry point (`src/components/SettingsMenu/`). Client component.
+Settings panel (`src/components/SettingsMenu/`). Client component. **Desktop only** expand (`md+`).
 
-**Placement** (`page.tsx`): `absolute left-5 top-[68px] z-10` — 20px below 48px header, 20px from left.
+**Placement** (`page.tsx`): `absolute left-[14px] top-[68px] z-10` — 20px below 48px header, 14px from left.
 
-**Trigger:** 34×34 button with `surfacePanelClass` (`backdrop-blur-[20px]`, `bg-background-primary`, `rounded-[6px]`). 18×18 inline SVG gear (`SettingsGearIcon`), `fill="currentColor"` + `text-icon-primary`.
+**Closed:** 34×34 `surfacePanelClass` trigger with gear icon.
 
-**Future:** root wrapper is `relative w-fit` so the same surface expands into a full settings panel (not implemented yet). Button has `aria-haspopup="dialog"` / `aria-expanded={false}` for next step.
+**Open (desktop):** panel width **420px**, height **content-driven** (200ms width + height transition). `SettingsMenuHeader` + `SettingsMenuContent`.
+
+**Menu content:** 20px below header divider, 16px left / 4px right padding, 20px bottom. Rows: 18×18 icon (50% opacity) + 24px gap + 16px label (90% opacity). 16px between rows. External-link arrow: vertically centered, 20px from panel right.
+
+### `DividerLine/`
+
+1px `bg-text-primary/10` horizontal rule.
 
 ### `providers/ThemeProvider.tsx`
 
@@ -217,7 +229,7 @@ Not part of game UI — for local inspection only.
 | Component | Role |
 |-----------|------|
 | `DevThemeToggle` | Fixed bottom-center dev bar: Light/Dark + Game/UI Kit navigation. Rendered in root layout. |
-| `UiKitView` | UI Kit page — tabbed catalog (General, Icons, Components, Variables, Dev) with previews. |
+| `UiKitView` | UI Kit page — tabbed catalog (General, Icons, Components, Styles, Variables, Dev) with previews. |
 | `UiKitPreview` | Live preview per registry entry id; supports Desktop/Mobile viewport. |
 | `UiKitVariablesPanel` | Variables tab — global CSS tokens with live swatches. |
 
@@ -254,6 +266,8 @@ Shared primary panel chrome — settings trigger, future modals/panels.
 |------|-----|---------|
 | `background.png` | `/assets/background.png` | `GameScreen` |
 | `settings-gear.svg` | `/settings-gear.svg` | Source reference for `SettingsGearIcon` (inlined in component) |
+
+Menu icons: `public/icons/menu/*.svg` → served at `/icons/menu/` (used by `SettingsMenuItemIcon`).
 
 Files in `public/` are served as-is from the site root. Any component referencing `/assets/...` requires the corresponding file in the target project's public/static serving setup.
 
@@ -332,7 +346,8 @@ Details: [AGENTS.md](./AGENTS.md), `.cursor/rules/component-conventions.mdc`.
 | Game screen shell | `src/components/GameScreen/` + route `/` | Layout wrapper; accepts overlay `children` |
 | Map background | inside `GameScreen` | **Placeholder** — static `<img>`; production = live map |
 | Desktop header | `src/components/DesktopHeader/` | Desktop only (`md+`); 48px; logo cluster + `ProminenceAnchor` |
-| Settings menu | `src/components/SettingsMenu/` | 34×34 trigger; expands later |
+| Settings menu | `src/components/SettingsMenu/` | Desktop: 34×34 → 420×420 panel with header |
+| Divider line | `src/components/DividerLine/` | `text-primary` at 10% opacity |
 | Dev theme toggle | `src/components/dev/DevThemeToggle.tsx` | Bottom-center Light/Dark (not game UI) |
 | UI Kit | `/ui-kit` + `src/lib/ui-kit/registry.ts` | Living component catalog for inspection |
 

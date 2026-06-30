@@ -6,8 +6,73 @@ import { GameScreenShell } from "@/components/GameScreen/GameScreenShell";
 import { ProminenceAnchor } from "@/components/ProminenceAnchor/ProminenceAnchor";
 import { SettingsGearIcon } from "@/components/SettingsMenu/SettingsGearIcon";
 import { SettingsMenu } from "@/components/SettingsMenu/SettingsMenu";
+import { SettingsCloseIcon } from "@/components/SettingsMenu/SettingsCloseIcon";
+import { SettingsMenuHeader } from "@/components/SettingsMenu/SettingsMenuHeader";
+import { SettingsMenuContent } from "@/components/SettingsMenu/SettingsMenuContent";
+import { SettingsMenuItem } from "@/components/SettingsMenu/SettingsMenuItem";
+import { SettingsMenuLinkItem } from "@/components/SettingsMenu/SettingsMenuLinkItem";
+import { SettingsMenuItemIcon } from "@/components/SettingsMenu/SettingsMenuItemIcon";
+import { SettingsExternalLinkIcon } from "@/components/SettingsMenu/SettingsExternalLinkIcon";
+import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { surfacePanelClass } from "@/lib/surface";
+import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
+import { panelSizeTransitionClass } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
+import { useState, type ReactNode } from "react";
+
+const MENU_ICON_NAMES = [
+  "Game settings",
+  "User settings",
+  "Tutorial",
+  "Events",
+  "Report bug",
+  "Discord",
+  "Wikipedia",
+] as const;
+
+function ReplayOnHover({
+  children,
+  hint = "Hover to replay",
+}: {
+  children: ReactNode;
+  hint?: string;
+}) {
+  const [key, setKey] = useState(0);
+
+  return (
+    <div className="w-full" onMouseEnter={() => setKey((value) => value + 1)}>
+      <div key={key}>{children}</div>
+      <p className="mt-3 text-xs text-black/55 dark:text-white/55">{hint}</p>
+    </div>
+  );
+}
+
+function PanelTransitionHoverPreview() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      className="flex flex-col items-center gap-3"
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
+    >
+      <div
+        className={cn(
+          surfacePanelClass,
+          panelSizeTransitionClass,
+          "overflow-hidden",
+        )}
+        style={{
+          width: expanded ? 160 : 34,
+          height: expanded ? 80 : 34,
+        }}
+      />
+      <p className="text-xs text-black/55 dark:text-white/55">
+        Hover to expand / collapse
+      </p>
+    </div>
+  );
+}
 
 export type UiKitViewport = "desktop" | "mobile";
 
@@ -20,14 +85,21 @@ function MapPreviewFrame({
   children,
   className,
   mapClassName,
+  frameClassName,
 }: {
   children: React.ReactNode;
   className?: string;
   mapClassName?: string;
+  frameClassName?: string;
 }) {
   return (
-    <div className="relative h-48 overflow-hidden rounded-md border border-black/10 dark:border-white/10">
-      <GameScreenShell className="h-full" mapClassName={mapClassName}>
+    <div
+      className={cn(
+        "relative h-48 overflow-hidden rounded-md border border-black/10 dark:border-white/10",
+        frameClassName,
+      )}
+    >
+      <GameScreenShell className="h-full" mapClassName={mapClassName} containProminence>
         <div className={cn("absolute inset-0", className)}>{children}</div>
       </GameScreenShell>
     </div>
@@ -39,15 +111,21 @@ function PreviewFrame({
   className,
   mapContext = false,
   mapClassName,
+  frameClassName,
 }: {
   children: React.ReactNode;
   className?: string;
   mapContext?: boolean;
   mapClassName?: string;
+  frameClassName?: string;
 }) {
   if (mapContext) {
     return (
-      <MapPreviewFrame className={className} mapClassName={mapClassName}>
+      <MapPreviewFrame
+        className={className}
+        mapClassName={mapClassName}
+        frameClassName={frameClassName}
+      >
         {children}
       </MapPreviewFrame>
     );
@@ -103,11 +181,58 @@ export function UiKitPreview({ entryId, viewport }: UiKitPreviewProps) {
           </PreviewFrame>
         );
 
+      case "panel-size-transition-class":
+        return (
+          <PreviewFrame>
+            <PanelTransitionHoverPreview />
+          </PreviewFrame>
+        );
+
+      case "icon-hitbox-class":
+        return (
+          <PreviewFrame>
+            <button
+              type="button"
+              className={cn(
+                ICON_HITBOX_CLASS,
+                "rounded border border-dashed border-black/25 dark:border-white/25",
+              )}
+              aria-label="Hitbox demo"
+            >
+              <SettingsGearIcon />
+            </button>
+          </PreviewFrame>
+        );
+
+      case "settings-menu-row-styles":
+        return (
+          <PreviewFrame className="w-full max-w-[420px] flex-col gap-4 bg-background-primary p-4">
+            <SettingsMenuItem icon="Game settings" label="Menu row (50% / 90%)" />
+            <SettingsMenuLinkItem
+              icon="Discord"
+              label="Link row + arrow (40%)"
+              href="https://discord.com/invite/paxhistoria"
+            />
+            <p className="text-xs text-black/55 dark:text-white/55">
+              Hover rows to see opacity → 100%. Values live inline on components.
+            </p>
+          </PreviewFrame>
+        );
+
+      case "settings-menu-reveal":
+        return (
+          <PreviewFrame className="w-full max-w-[420px] bg-background-primary p-4">
+            <ReplayOnHover hint="Hover to replay slide-in">
+              <SettingsMenuItem icon="Tutorial" label="Slide-in reveal" />
+            </ReplayOnHover>
+          </PreviewFrame>
+        );
+
       case "game-screen":
         return (
           <PreviewFrame mapContext mapClassName="object-left-top">
             <DesktopHeader />
-            <SettingsMenu className="absolute left-5 top-[68px]" />
+            <SettingsMenu className="absolute left-[14px] top-[68px]" />
           </PreviewFrame>
         );
 
@@ -127,8 +252,33 @@ export function UiKitPreview({ entryId, viewport }: UiKitPreviewProps) {
 
       case "settings-menu":
         return (
-          <PreviewFrame mapContext mapClassName="object-left-top">
-            <SettingsMenu className="absolute left-5 top-5" />
+          <PreviewFrame
+            mapContext
+            mapClassName="object-left-top"
+            frameClassName="min-h-48"
+          >
+            <SettingsMenu className="absolute left-[14px] top-5" defaultOpen />
+          </PreviewFrame>
+        );
+
+      case "settings-close-icon":
+        return (
+          <PreviewFrame className="bg-neutral-800">
+            <SettingsCloseIcon />
+          </PreviewFrame>
+        );
+
+      case "divider-line":
+        return (
+          <PreviewFrame className="w-full max-w-xs bg-neutral-900">
+            <DividerLine className="w-full" />
+          </PreviewFrame>
+        );
+
+      case "settings-menu-header":
+        return (
+          <PreviewFrame className="w-full max-w-[420px] bg-background-primary p-0">
+            <SettingsMenuHeader onClose={() => undefined} />
           </PreviewFrame>
         );
 
@@ -136,6 +286,57 @@ export function UiKitPreview({ entryId, viewport }: UiKitPreviewProps) {
         return (
           <PreviewFrame>
             <SettingsGearIcon />
+          </PreviewFrame>
+        );
+
+      case "settings-menu-item-icon":
+        return (
+          <PreviewFrame className="w-full max-w-md flex-col gap-4 bg-background-primary p-4">
+            <div className="flex flex-wrap gap-4">
+              {MENU_ICON_NAMES.map((name) => (
+                <div key={name} className="flex flex-col items-center gap-1.5">
+                  <SettingsMenuItemIcon
+                    name={name}
+                    className="opacity-50"
+                  />
+                  <span className="max-w-[4.5rem] text-center text-[10px] text-text-primary/60">
+                    {name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </PreviewFrame>
+        );
+
+      case "settings-external-link-icon":
+        return (
+          <PreviewFrame className="bg-background-primary">
+            <SettingsExternalLinkIcon className="opacity-40" />
+          </PreviewFrame>
+        );
+
+      case "settings-menu-content":
+        return (
+          <PreviewFrame className="w-full max-w-[420px] bg-background-primary p-0">
+            <SettingsMenuContent />
+          </PreviewFrame>
+        );
+
+      case "settings-menu-item":
+        return (
+          <PreviewFrame className="w-full max-w-[420px] bg-background-primary p-4">
+            <SettingsMenuItem icon="Events" label="Events" />
+          </PreviewFrame>
+        );
+
+      case "settings-menu-link-item":
+        return (
+          <PreviewFrame className="w-full max-w-[420px] bg-background-primary p-4">
+            <SettingsMenuLinkItem
+              icon="Wikipedia"
+              label="Wikipedia"
+              href="https://wiki.paxhistoria.co/wiki/Main_Page"
+            />
           </PreviewFrame>
         );
 

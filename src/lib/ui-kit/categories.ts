@@ -2,6 +2,7 @@ export const uiKitTabs = [
   { id: "general", label: "General" },
   { id: "icons", label: "Icons" },
   { id: "components", label: "Components" },
+  { id: "styles", label: "Styles" },
   { id: "variables", label: "Variables" },
   { id: "dev", label: "Dev" },
 ] as const;

@@ -69,7 +69,7 @@ export function ProminenceBackdropPlaced({ rect }: ProminenceBackdropPlacedProps
   return (
     <>
       <div
-        className="pointer-events-none absolute overflow-visible"
+        className="pointer-events-none absolute overflow-visible [contain:layout_paint_style]"
         style={{
           ...boxStyle,
           backdropFilter: backdropBlur,
@@ -79,7 +79,7 @@ export function ProminenceBackdropPlaced({ rect }: ProminenceBackdropPlacedProps
         }}
       />
       <div
-        className="pointer-events-none absolute overflow-visible"
+        className="pointer-events-none absolute overflow-visible [contain:layout_paint_style]"
         style={{
           ...boxStyle,
           background: fill,

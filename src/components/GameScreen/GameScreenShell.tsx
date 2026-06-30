@@ -1,8 +1,11 @@
 "use client";
 
-import { ProminenceLayerContext } from "@/components/ProminenceAnchor/ProminenceLayerContext";
+import {
+  ProminenceLayerContext,
+  type ProminenceLayerValue,
+} from "@/components/ProminenceAnchor/ProminenceLayerContext";
 import { cn } from "@/lib/cn";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 const BACKGROUND_SRC = "/assets/background.png";
 
@@ -10,15 +13,33 @@ type GameScreenShellProps = {
   children?: ReactNode;
   className?: string;
   mapClassName?: string;
+  /**
+   * Keep prominence backdrops inside this shell (UI Kit previews).
+   * Default `false` uses a fixed viewport layer for the full game screen.
+   */
+  containProminence?: boolean;
 };
 
-export function GameScreenShell({ children, className, mapClassName }: GameScreenShellProps) {
+export function GameScreenShell({
+  children,
+  className,
+  mapClassName,
+  containProminence = false,
+}: GameScreenShellProps) {
   const [prominenceLayer, setProminenceLayer] = useState<HTMLDivElement | null>(null);
 
+  const prominenceContext = useMemo<ProminenceLayerValue>(
+    () => ({
+      layer: prominenceLayer,
+      coordinates: containProminence ? "layer" : "viewport",
+    }),
+    [prominenceLayer, containProminence],
+  );
+
   return (
-    <ProminenceLayerContext.Provider value={prominenceLayer}>
-      <div className={cn("relative isolate h-dvh w-full overflow-visible", className)}>
-        <div className="absolute inset-0 overflow-hidden">
+    <ProminenceLayerContext.Provider value={prominenceContext}>
+      <div className={cn("relative h-dvh w-full overflow-visible", className)}>
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <img
             src={BACKGROUND_SRC}
             alt=""
@@ -31,14 +52,15 @@ export function GameScreenShell({ children, className, mapClassName }: GameScree
             )}
           />
         </div>
-        {/* z-[1]: prominence backdrops — above map, below all UI */}
         <div
           ref={setProminenceLayer}
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-[1] overflow-visible"
+          className={cn(
+            "pointer-events-none z-[1] overflow-visible",
+            containProminence ? "absolute inset-0" : "fixed inset-0",
+          )}
         />
-        {/* z-10: all interactive / visible UI */}
-        <div className="absolute inset-0 z-10 overflow-visible">{children}</div>
+        <div className="absolute inset-0 z-10 isolate overflow-visible">{children}</div>
       </div>
     </ProminenceLayerContext.Provider>
   );

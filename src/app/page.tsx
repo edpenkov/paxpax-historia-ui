@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <GameScreen>
       <DesktopHeader />
-      <SettingsMenu className="absolute left-5 top-[68px] z-10" />
+      <SettingsMenu className="absolute left-[14px] top-[68px] z-10" />
     </GameScreen>
   );
 }
