@@ -3,20 +3,20 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --surface-primary: rgba(221, 234, 243, 0.8);
+  --background-primary: rgba(221, 234, 243, 0.8);
   --icon-primary: #00021e;
   --text-primary: #00021e;
 }
 
 .dark {
-  --surface-primary: rgba(0, 0, 0, 0.86);
+  --background-primary: rgba(0, 0, 0, 0.86);
   --icon-primary: #ffffff;
   --text-primary: #ffffff;
 }
 
 @theme inline {
   --font-sans: var(--font-poppins);
-  --color-surface-primary: var(--surface-primary);
+  --color-background-primary: var(--background-primary);
   --color-icon-primary: var(--icon-primary);
   --color-text-primary: var(--text-primary);
 }

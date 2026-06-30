@@ -49,3 +49,20 @@ Do not impose token/component phases. Suggest extraction only when a pattern rep
 - You notice **overlap with production concerns** (map, auth, game state) — clarify this repo stays visual-only
 
 Share concerns openly: duplication, unclear props API, missing responsive behavior, or anything that would confuse a future integrator. Update `HANDOFF.md` inventory when adding non-trivial components.
+
+## UI inspection (dev-only)
+
+Tools for visually inspecting this repo while building — **not part of game UI** and not intended for production handoff.
+
+1. **`DevThemeToggle`** — fixed bottom-center Light/Dark switch (in root layout). Use it to compare themes quickly.
+2. **`/ui-kit` route** — living catalog of components, tokens, utilities, and dev tools with props, values, and live previews.
+
+**When adding or changing UI building blocks**, always update:
+
+- `src/lib/ui-kit/registry.ts` — metadata (name, path, category, props, values, notes, `viewportToggle`)
+- `src/lib/ui-kit/variables.ts` — global CSS variables (when adding tokens to `globals.css`)
+- `src/components/dev/UiKitPreview.tsx` — live preview for that entry (if previewable)
+- `HANDOFF.md` — routes and component inventory
+
+Registry categories (tabs): `general`, `icons`, `components`, `dev`, plus a **Variables** tab from `variables.ts`.
+Set `viewportToggle: true` on responsive components so UI Kit shows Desktop / Mobile preview.

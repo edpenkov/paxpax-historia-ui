@@ -1,20 +1,23 @@
 "use client";
 
 import { ProminenceLayerContext } from "@/components/ProminenceAnchor/ProminenceLayerContext";
+import { cn } from "@/lib/cn";
 import { useState, type ReactNode } from "react";
 
 const BACKGROUND_SRC = "/assets/background.png";
 
 type GameScreenShellProps = {
   children?: ReactNode;
+  className?: string;
+  mapClassName?: string;
 };
 
-export function GameScreenShell({ children }: GameScreenShellProps) {
+export function GameScreenShell({ children, className, mapClassName }: GameScreenShellProps) {
   const [prominenceLayer, setProminenceLayer] = useState<HTMLDivElement | null>(null);
 
   return (
     <ProminenceLayerContext.Provider value={prominenceLayer}>
-      <div className="relative isolate h-dvh w-full overflow-visible">
+      <div className={cn("relative isolate h-dvh w-full overflow-visible", className)}>
         <div className="absolute inset-0 overflow-hidden">
           <img
             src={BACKGROUND_SRC}
@@ -22,7 +25,10 @@ export function GameScreenShell({ children }: GameScreenShellProps) {
             fetchPriority="high"
             decoding="async"
             draggable={false}
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover object-center",
+              mapClassName,
+            )}
           />
         </div>
         {/* z-[1]: prominence backdrops — above map, below all UI */}

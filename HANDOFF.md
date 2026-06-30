@@ -56,8 +56,9 @@ paxpax-historia-ui/
 | Route | File | Renders |
 |-------|------|---------|
 | `/` | `src/app/page.tsx` | `<GameScreen />` |
+| `/ui-kit` | `src/app/ui-kit/page.tsx` | Component catalog (dev inspection) |
 
-No other routes yet. No API routes, no middleware.
+No API routes, no middleware.
 
 ---
 
@@ -82,19 +83,19 @@ Current contents and meaning:
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --surface-primary: rgba(221, 234, 243, 0.8);
+  --background-primary: rgba(221, 234, 243, 0.8);
   --icon-primary: #00021e;
   --text-primary: #00021e;
 }
 .dark {
-  --surface-primary: rgba(0, 0, 0, 0.86);
+  --background-primary: rgba(0, 0, 0, 0.86);
   --icon-primary: #ffffff;
   --text-primary: #ffffff;
 }
 
 @theme inline {
   --font-sans: var(--font-poppins);
-  --color-surface-primary: var(--surface-primary);
+  --color-background-primary: var(--background-primary);
   --color-icon-primary: var(--icon-primary);
   --color-text-primary: var(--text-primary);
 }
@@ -104,11 +105,11 @@ Current contents and meaning:
 
 | Token | Tailwind | Light | Dark |
 |-------|----------|-------|------|
-| Surface | `bg-surface-primary` | `rgba(221,234,243,0.8)` | `rgba(0,0,0,0.86)` |
+| Background | `bg-background-primary` | `rgba(221,234,243,0.8)` | `rgba(0,0,0,0.86)` |
 | Icon | `bg-icon-primary`, `text-icon-primary` | `#00021E` | `#fff` |
 | Text | `text-text-primary` | `#00021E` | `#fff` |
 
-Panel chrome also uses `backdrop-blur-[20px]` + `rounded-[6px]` — see `src/lib/surface.ts` (`surfacePanelClass`).
+Panel chrome also uses `backdrop-blur-[20px]` + `rounded-[6px]` — see `src/lib/surface.ts` (`surfacePanelClass`). Full variable list: `/ui-kit` → Variables tab (`src/lib/ui-kit/variables.ts`).
 
 - **Tailwind v4** entry via `@import`
 - **`dark` variant** — `next-themes` `attribute="class"`
@@ -195,7 +196,7 @@ Settings entry point (`src/components/SettingsMenu/`). Client component.
 
 **Placement** (`page.tsx`): `absolute left-5 top-[68px] z-10` — 20px below 48px header, 20px from left.
 
-**Trigger:** 34×34 button with `surfacePanelClass` (`backdrop-blur-[20px]`, `bg-surface-primary`, `rounded-[6px]`). 18×18 inline SVG gear (`SettingsGearIcon`), `fill="currentColor"` + `text-icon-primary`.
+**Trigger:** 34×34 button with `surfacePanelClass` (`backdrop-blur-[20px]`, `bg-background-primary`, `rounded-[6px]`). 18×18 inline SVG gear (`SettingsGearIcon`), `fill="currentColor"` + `text-icon-primary`.
 
 **Future:** root wrapper is `relative w-fit` so the same surface expands into a full settings panel (not implemented yet). Button has `aria-haspopup="dialog"` / `aria-expanded={false}` for next step.
 
@@ -207,7 +208,22 @@ Client component (`"use client"`). Thin wrapper around `next-themes`:
 - `defaultTheme="system"`
 - `enableSystem`
 
-Used only in root layout. No theme toggle UI in this repo yet.
+Used in root layout together with `DevThemeToggle` (dev-only theme switch, not game UI).
+
+### Dev tools (`src/components/dev/`)
+
+Not part of game UI — for local inspection only.
+
+| Component | Role |
+|-----------|------|
+| `DevThemeToggle` | Fixed bottom-center dev bar: Light/Dark + Game/UI Kit navigation. Rendered in root layout. |
+| `UiKitView` | UI Kit page — tabbed catalog (General, Icons, Components, Variables, Dev) with previews. |
+| `UiKitPreview` | Live preview per registry entry id; supports Desktop/Mobile viewport. |
+| `UiKitVariablesPanel` | Variables tab — global CSS tokens with live swatches. |
+
+**Registry:** `src/lib/ui-kit/registry.ts` — update when adding/changing components or utilities.
+**Variables:** `src/lib/ui-kit/variables.ts` — update when adding CSS tokens to `globals.css`.
+**Tabs:** `src/lib/ui-kit/categories.ts`.
 
 ---
 
@@ -225,7 +241,7 @@ Used for conditional Tailwind class composition. Import: `@/lib/cn`.
 
 ```ts
 export const surfacePanelClass =
-  "rounded-[6px] backdrop-blur-[20px] bg-surface-primary";
+  "rounded-[6px] backdrop-blur-[20px] bg-background-primary";
 ```
 
 Shared primary panel chrome — settings trigger, future modals/panels.
@@ -268,12 +284,18 @@ Full list: `package.json`.
 |------|------|
 | `src/app/layout.tsx` | Server |
 | `src/app/page.tsx` | Server |
+| `src/app/ui-kit/page.tsx` | Server |
+| `src/app/ui-kit/layout.tsx` | Server |
 | `src/components/GameScreen/GameScreen.tsx` | Server |
 | `src/components/GameScreen/GameScreenShell.tsx` | Client |
 | `src/components/DesktopHeader/DesktopHeader.tsx` | Server |
 | `src/components/ProminenceAnchor/ProminenceAnchor.tsx` | Client |
 | `src/components/ProminenceAnchor/ProminenceBackdropPlaced.tsx` | Server (portaled) |
 | `src/components/providers/ThemeProvider.tsx` | Client |
+| `src/components/dev/DevThemeToggle.tsx` | Client |
+| `src/components/dev/UiKitView.tsx` | Client |
+| `src/components/dev/UiKitPreview.tsx` | Client |
+| `src/components/dev/UiKitVariablesPanel.tsx` | Client |
 
 Components that use `motion` or browser-only APIs will be marked `"use client"` when added.
 
@@ -310,7 +332,9 @@ Details: [AGENTS.md](./AGENTS.md), `.cursor/rules/component-conventions.mdc`.
 | Game screen shell | `src/components/GameScreen/` + route `/` | Layout wrapper; accepts overlay `children` |
 | Map background | inside `GameScreen` | **Placeholder** — static `<img>`; production = live map |
 | Desktop header | `src/components/DesktopHeader/` | Desktop only (`md+`); 48px; logo cluster + `ProminenceAnchor` |
-| Prominence backdrop | `src/components/ProminenceAnchor/` | Reusable map darkening/highlight under UI; configurable `expand` |
+| Settings menu | `src/components/SettingsMenu/` | 34×34 trigger; expands later |
+| Dev theme toggle | `src/components/dev/DevThemeToggle.tsx` | Bottom-center Light/Dark (not game UI) |
+| UI Kit | `/ui-kit` + `src/lib/ui-kit/registry.ts` | Living component catalog for inspection |
 
 Mark new entries with **Placeholder** when the implementation is a stand-in for dynamic/production behavior.
 
@@ -321,6 +345,7 @@ Mark new entries with **Placeholder** when the implementation is a stand-in for 
 ```
 layout.tsx
   ├── ThemeProvider.tsx  → next-themes
+  ├── DevThemeToggle.tsx
   ├── globals.css
   └── Poppins (next/font)
 
@@ -329,6 +354,9 @@ page.tsx
         ├── /assets/background.png (placeholder — static map stand-in)
         ├── DesktopHeader.tsx
         └── SettingsMenu.tsx → SettingsGearIcon, surfacePanelClass
+
+ui-kit/page.tsx
+  └── UiKitView.tsx → registry.ts, UiKitPreview.tsx
 ```
 
 ---
@@ -338,3 +366,4 @@ page.tsx
 | Date | Change |
 |------|--------|
 | 2026-06-29 | Initial foundation + GameScreen with `background.png` |
+| 2026-06-29 | Dev theme toggle, `/ui-kit` catalog, primary tokens, SettingsMenu |
