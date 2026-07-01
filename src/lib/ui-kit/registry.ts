@@ -26,7 +26,11 @@ export type UiKitEntry = {
   props?: UiKitPropDoc[];
   values?: UiKitValueDoc[];
   notes?: string[];
-  /** Show Desktop / Mobile preview toggle (responsive components). */
+  /** Links to related catalog entries (shown on the card). */
+  relatedEntries?: { id: string; label: string }[];
+  /** Lock preview to one viewport width (no Desktop / Mobile toggle). */
+  previewViewport?: "desktop" | "mobile";
+  /** Show Desktop / Mobile preview toggle. Ignored when previewViewport is set. */
   viewportToggle?: boolean;
 };
 
@@ -39,24 +43,30 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "general",
     group: "Primitives",
     kind: "component",
-    description: "1px rule using text-primary at 10% opacity. Horizontal (default) or vertical.",
+    description: "1px rule using text-primary at 10% opacity. variant=bridge for mobile top-bar seam.",
     props: [
       {
         name: "className",
         type: "string",
-        description: "Additional classes on the hr element.",
+        description: "Additional classes on the element.",
       },
       {
         name: "orientation",
         type: '"horizontal" | "vertical"',
         defaultValue: '"horizontal"',
-        description: "Vertical: 1px wide, stretches to container height (no vertical margin).",
+        description: "line variant only. Vertical: 1px wide, stretches to container height.",
+      },
+      {
+        name: "variant",
+        type: '"line" | "bridge"',
+        defaultValue: '"line"',
+        description: "bridge: panel surface + 10% overlay (mobile top bar between buttons).",
       },
     ],
     values: [
       { label: "Height", light: "1px", dark: "1px" },
       { label: "Color", light: "text-primary / 10%", dark: "same" },
-      { label: "Vertical margin", light: "4px (my-1)", dark: "same" },
+      { label: "Vertical margin", light: "4px (my-1) horizontal line only", dark: "same" },
     ],
   },
   {
@@ -74,6 +84,22 @@ export const uiKitEntries: UiKitEntry[] = [
         type: "ReactNode",
         description: "Screen UI rendered in the z-10 layer above the map.",
       },
+      {
+        name: "className",
+        type: "string",
+        description: "Classes on the root viewport wrapper.",
+      },
+      {
+        name: "mapClassName",
+        type: "string",
+        description: "Classes on the map image (e.g. object position).",
+      },
+      {
+        name: "containProminence",
+        type: "boolean",
+        defaultValue: "false",
+        description: "UI Kit previews: keep prominence backdrops inside this shell.",
+      },
     ],
     notes: ["Placeholder: map is a static PNG, not interactive."],
     viewportToggle: true,
@@ -83,9 +109,10 @@ export const uiKitEntries: UiKitEntry[] = [
     name: "DesktopHeader",
     importPath: "src/components/DesktopHeader/DesktopHeader.tsx",
     category: "components",
-    group: "Header",
+    group: "Header — desktop",
     kind: "component",
-    description: "48px desktop header with hamburger + PaxHistoria title and prominence backdrop.",
+    description:
+      "48px desktop header (md+). Hamburger + PaxHistoria title with prominence backdrop. Not shown on mobile.",
     props: [
       {
         name: "children",
@@ -107,14 +134,16 @@ export const uiKitEntries: UiKitEntry[] = [
         dark: "same",
       },
     ],
-    viewportToggle: true,
+    previewViewport: "desktop",
+    relatedEntries: [{ id: "mobile-top-controls", label: "Mobile header equivalent" }],
+    notes: ["Hidden below md. Mobile layout uses MobileTopControls."],
   },
   {
     id: "hamburger-icon",
     name: "HamburgerIcon",
     importPath: "src/components/DesktopHeader/HamburgerIcon.tsx",
     category: "icons",
-    group: "Header",
+    group: "Header — desktop",
     kind: "component",
     description: "20×12 menu icon. Header variant: white + shadow. Control variant: matches settings gear.",
     props: [
@@ -135,13 +164,14 @@ export const uiKitEntries: UiKitEntry[] = [
       { label: "Fill (header)", light: "white + drop shadow", dark: "same" },
       { label: "Fill (control)", light: "currentColor (text-icon-primary)", dark: "same" },
     ],
+    notes: ["Preview shows both variants. Control variant is used in MobileTopBarButton (left)."],
   },
   {
     id: "mobile-top-controls",
     name: "MobileTopControls",
     importPath: "src/components/MobileTopControls/MobileTopControls.tsx",
     category: "components",
-    group: "Mobile header",
+    group: "Header — mobile",
     kind: "component",
     description:
       "Mobile top-left controls: 44×44 menu + 1px divider + 44×44 settings (89px row). Settings panel drops below with 4px gap.",
@@ -179,23 +209,33 @@ export const uiKitEntries: UiKitEntry[] = [
       { label: "Position", light: "top-1 left-1 (4px)", dark: "same" },
       { label: "Row size", light: "89×44 (44 + 1 divider + 44)", dark: "same" },
       { label: "Corner radius", light: "8px outer left (menu) + outer right (settings)", dark: "same" },
-      { label: "Divider", light: "MobileControlDivider — panel surface + text-primary/10 overlay", dark: "same" },
+      { label: "Divider", light: "DividerLine variant=bridge", dark: "same" },
       { label: "Panel gap", light: "4px (mt-1) below row", dark: "same" },
       { label: "Panel width", light: "calc(100vw − 8px)", dark: "same" },
       { label: "Panel radius (open)", light: "12px", dark: "same" },
       { label: "Visibility", light: "md:hidden", dark: "md:hidden" },
     ],
-    viewportToggle: true,
+    previewViewport: "mobile",
+    relatedEntries: [
+      { id: "desktop-header", label: "Desktop header (md+)" },
+      { id: "settings-menu", label: "Settings panel (toggle preview)" },
+    ],
   },
   {
-    id: "mobile-menu-button",
-    name: "MobileMenuButton",
-    importPath: "src/components/MobileTopControls/MobileMenuButton.tsx",
+    id: "mobile-top-bar-button",
+    name: "MobileTopBarButton",
+    importPath: "src/components/MobileTopControls/MobileTopBarButton.tsx",
     category: "components",
-    group: "Mobile header",
+    group: "Header — mobile",
     kind: "component",
-    description: "44×44 mobile menu trigger with hamburger icon. Placeholder — no handler yet.",
+    description:
+      "44×44 mobile top-bar button. position=left: hamburger menu. position=right: settings gear with aria-expanded.",
     props: [
+      {
+        name: "position",
+        type: '"left" | "right"',
+        description: "Left: menu trigger. Right: settings trigger (rounded outer edge).",
+      },
       {
         name: "className",
         type: "string",
@@ -204,43 +244,29 @@ export const uiKitEntries: UiKitEntry[] = [
       {
         name: "onClick",
         type: "() => void",
-        description: "Optional click handler (future mobile nav).",
+        description: "Click handler (required for settings; optional for menu placeholder).",
       },
-    ],
-    values: [
-      { label: "Size", light: "44×44 (h-11 w-11)", dark: "same" },
-      { label: "Surface", light: "mobileControlSurfaceLeftClass (rounded-l-[8px])", dark: "same" },
-    ],
-  },
-  {
-    id: "mobile-settings-trigger",
-    name: "MobileSettingsTrigger",
-    importPath: "src/components/MobileTopControls/MobileSettingsTrigger.tsx",
-    category: "components",
-    group: "Mobile header",
-    kind: "component",
-    description: "44×44 mobile settings gear trigger. Toggles settings panel open state.",
-    props: [
       {
         name: "isOpen",
         type: "boolean",
-        description: "Whether the settings panel is open (aria-expanded).",
-      },
-      {
-        name: "onClick",
-        type: "() => void",
-        description: "Toggle handler.",
-      },
-      {
-        name: "className",
-        type: "string",
-        description: "Additional classes on the button.",
+        defaultValue: "false",
+        description: "Right button only — settings panel open state (aria-expanded).",
       },
     ],
     values: [
       { label: "Size", light: "44×44 (h-11 w-11)", dark: "same" },
-      { label: "Surface", light: "mobileControlSurfaceRightClass (rounded-r-[8px])", dark: "same" },
+      {
+        label: "Surface (left)",
+        light: "mobileControlSurfaceLeftClass (rounded-l-[8px])",
+        dark: "same",
+      },
+      {
+        label: "Surface (right)",
+        light: "mobileControlSurfaceRightClass (rounded-r-[8px])",
+        dark: "same",
+      },
     ],
+    previewViewport: "mobile",
   },
   {
     id: "settings-menu",
@@ -305,16 +331,22 @@ export const uiKitEntries: UiKitEntry[] = [
       },
     ],
     viewportToggle: true,
+    relatedEntries: [{ id: "mobile-top-controls", label: "Mobile settings entry point" }],
   },
   {
-    id: "settings-gear-icon",
-    name: "SettingsGearIcon",
-    importPath: "src/components/SettingsMenu/SettingsGearIcon.tsx",
+    id: "settings-panel-icon",
+    name: "SettingsPanelIcon",
+    importPath: "src/components/SettingsMenu/SettingsPanelIcon.tsx",
     category: "icons",
     group: "Settings panel",
     kind: "component",
-    description: "18×18 gear SVG. Uses currentColor via text-icon-primary.",
+    description: "Settings panel SVG icons. gear: 18×18 trigger. close: 14×14 header X.",
     props: [
+      {
+        name: "variant",
+        type: '"gear" | "close"',
+        description: "Which panel icon to render.",
+      },
       {
         name: "className",
         type: "string",
@@ -322,32 +354,9 @@ export const uiKitEntries: UiKitEntry[] = [
       },
     ],
     values: [
-      { label: "Size", light: "18×18", dark: "18×18" },
-      { label: "Opacity", light: "75%", dark: "90%" },
-      { label: "Hover opacity", light: "100% (group/control)", dark: "same" },
-      { label: "Source", light: "public/settings-gear.svg", dark: "same" },
-    ],
-  },
-  {
-    id: "settings-close-icon",
-    name: "SettingsCloseIcon",
-    importPath: "src/components/SettingsMenu/SettingsCloseIcon.tsx",
-    category: "icons",
-    group: "Settings panel",
-    kind: "component",
-    description: "14×14 close X for settings panel header.",
-    props: [
-      {
-        name: "className",
-        type: "string",
-        description: "Additional classes on the SVG.",
-      },
-    ],
-    values: [
-      { label: "Size", light: "14×14", dark: "14×14" },
-      { label: "Hitbox", light: "24×24 (header close button)", dark: "same" },
-      { label: "Opacity", light: "75%", dark: "90%" },
-      { label: "Hover", light: "inset fill, icon 100%", dark: "same" },
+      { label: "Gear size", light: "18×18", dark: "18×18" },
+      { label: "Close size", light: "14×14", dark: "14×14" },
+      { label: "Gear opacity", light: "75% / 90% dark, 100% on group hover", dark: "same" },
     ],
   },
   {
@@ -382,42 +391,29 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
   },
   {
-    id: "settings-external-link-icon",
-    name: "SettingsExternalLinkIcon",
-    importPath: "src/components/SettingsMenu/SettingsExternalLinkIcon.tsx",
+    id: "settings-menu-row-trailing-icon",
+    name: "SettingsMenuRowTrailingIcon",
+    importPath: "src/components/SettingsMenu/SettingsMenuRowTrailingIcon.tsx",
     category: "icons",
     group: "Settings menu",
     kind: "component",
-    description: "9×9 external-link arrow for settings menu link rows.",
+    description:
+      "Trailing arrow on menu rows. chevron: button rows (hover). external-link: link rows.",
     props: [
+      {
+        name: "variant",
+        type: '"chevron" | "external-link"',
+        description: "Which trailing icon to render.",
+      },
       {
         name: "className",
         type: "string",
-        description: "Additional classes on the SVG.",
+        description: "Additional classes on the SVG (position, opacity).",
       },
     ],
     values: [
-      { label: "Size", light: "9×9", dark: "9×9" },
-      { label: "Stroke", light: "currentColor (text-icon-primary)", dark: "same" },
-    ],
-  },
-  {
-    id: "settings-chevron-icon",
-    name: "SettingsMenuChevronIcon",
-    importPath: "src/components/SettingsMenu/SettingsMenuChevronIcon.tsx",
-    category: "icons",
-    group: "Settings menu",
-    kind: "component",
-    description: "7×11 right chevron for settings menu button rows (hover only).",
-    props: [
-      {
-        name: "className",
-        type: "string",
-        description: "Additional classes on the SVG.",
-      },
-    ],
-    values: [
-      { label: "Size", light: "7×11", dark: "7×11" },
+      { label: "Chevron size", light: "7×11", dark: "7×11" },
+      { label: "External size", light: "9×9", dark: "9×9" },
       { label: "Stroke", light: "currentColor (text-icon-primary)", dark: "same" },
     ],
   },
@@ -489,42 +485,8 @@ export const uiKitEntries: UiKitEntry[] = [
     category: "components",
     group: "Settings menu",
     kind: "component",
-    description: "Settings menu button row — icon + label with slide-in reveal and hover chevron.",
-    props: [
-      {
-        name: "icon",
-        type: "string",
-        description: "Icon file name in public/icons/menu/.",
-      },
-      {
-        name: "label",
-        type: "string",
-        description: "Row label text.",
-      },
-      {
-        name: "onClick",
-        type: "() => void",
-        description: "Optional click handler (sub-views later).",
-      },
-      {
-        name: "className",
-        type: "string",
-        description: "Additional classes on the button.",
-      },
-    ],
-    notes: [
-      "Row opacity values documented under Styles → settings menu rows.",
-      "Chevron (7×11) at right-4, hidden until hover, then opacity-40 (matches link arrow at rest).",
-    ],
-  },
-  {
-    id: "settings-menu-link-item",
-    name: "SettingsMenuLinkItem",
-    importPath: "src/components/SettingsMenu/SettingsMenuLinkItem.tsx",
-    category: "components",
-    group: "Settings menu",
-    kind: "component",
-    description: "Settings menu external link row — icon + label + arrow, opens in new tab.",
+    description:
+      "Settings menu row — button (chevron on hover) or external link (href + arrow). Same layout and reveal.",
     props: [
       {
         name: "icon",
@@ -539,22 +501,24 @@ export const uiKitEntries: UiKitEntry[] = [
       {
         name: "href",
         type: "string",
-        description: "External URL (target=_blank).",
+        description: "When set, renders as external link (target=_blank) with arrow icon.",
+      },
+      {
+        name: "onClick",
+        type: "() => void",
+        description: "Button row only — optional click handler (sub-views later).",
       },
       {
         name: "className",
         type: "string",
-        description: "Additional classes on the anchor.",
+        description: "Additional classes on the row.",
       },
     ],
-    values: [
-      {
-        label: "Arrow position",
-        light: "absolute right-4 top-1/2 (20px from panel right)",
-        dark: "same",
-      },
+    notes: [
+      "Row opacity values documented under Styles → settings menu rows.",
+      "Button: chevron at right-4, hidden until hover/active, opacity-40.",
+      "Link: external arrow always visible at opacity-40 → 100% on hover/active.",
     ],
-    notes: ["Row opacity values documented under Styles → settings menu rows."],
   },
   {
     id: "prominence-anchor",
@@ -582,7 +546,7 @@ export const uiKitEntries: UiKitEntry[] = [
         description: "Classes on the anchor wrapper.",
       },
     ],
-    notes: ["Requires GameScreenShell prominence layer context."],
+    notes: ["Requires GameScreen prominence layer context."],
   },
   {
     id: "surface-panel-class",
@@ -661,6 +625,12 @@ export const uiKitEntries: UiKitEntry[] = [
         tailwind: "settingsMenuRowLabelClass",
       },
       {
+        label: "Button chevron",
+        light: "hidden → opacity-40 on hover / mobile active",
+        dark: "same",
+        tailwind: "settingsMenuRowChevronClass",
+      },
+      {
         label: "Header play-as",
         light: "14px, opacity-50",
         dark: "same",
@@ -668,9 +638,9 @@ export const uiKitEntries: UiKitEntry[] = [
       },
       {
         label: "External arrow",
-        light: "opacity-40 → 100% on hover",
+        light: "opacity-40 → 100% on hover / mobile active",
         dark: "same",
-        tailwind: "opacity-40 group-hover:opacity-100",
+        tailwind: "settingsMenuRowExternalLinkClass",
       },
       {
         label: "Icon ↔ label gap",
@@ -681,7 +651,7 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
     notes: [
       "Extract to shared classes only when the same pattern appears outside SettingsMenu.",
-      "See SettingsMenuItem, SettingsMenuLinkItem, SettingsMenuHeader.",
+      "See SettingsMenuItem, SettingsMenuHeader.",
     ],
   },
   {
@@ -714,6 +684,10 @@ export const uiKitEntries: UiKitEntry[] = [
         light: "var(--duration-ui), easeInOut",
         dark: "same",
       },
+    ],
+    viewportToggle: true,
+    notes: [
+      "Use Desktop / Mobile toggle. Mobile uses y-axis slide-in via SettingsMenuRevealProvider.",
     ],
   },
   {

@@ -1,6 +1,5 @@
 import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { SettingsMenuItem } from "@/components/SettingsMenu/SettingsMenuItem";
-import { SettingsMenuLinkItem } from "@/components/SettingsMenu/SettingsMenuLinkItem";
 import { cn } from "@/lib/cn";
 
 const MENU_ITEMS = [
@@ -40,7 +39,7 @@ export function SettingsMenuContent({ className }: SettingsMenuContentProps) {
 
       <DividerLine />
       {LINK_ITEMS.map((item) => (
-        <SettingsMenuLinkItem
+        <SettingsMenuItem
           key={item.label}
           icon={item.icon}
           label={item.label}

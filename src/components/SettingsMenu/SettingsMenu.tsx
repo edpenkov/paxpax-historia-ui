@@ -1,6 +1,6 @@
 "use client";
 
-import { SettingsGearIcon } from "@/components/SettingsMenu/SettingsGearIcon";
+import { SettingsPanelIcon } from "@/components/SettingsMenu/SettingsPanelIcon";
 import { SettingsMenuPanelContent } from "@/components/SettingsMenu/SettingsMenuPanelContent";
 import { settingsTriggerHoverClass } from "@/components/SettingsMenu/settingsIconControlStyles";
 import {
@@ -73,7 +73,7 @@ export function SettingsMenu({
             aria-expanded={false}
             aria-haspopup="dialog"
           >
-            <SettingsGearIcon />
+            <SettingsPanelIcon variant="gear" />
           </button>
         )}
       </div>

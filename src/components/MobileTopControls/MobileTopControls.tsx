@@ -1,8 +1,7 @@
 "use client";
 
-import { MobileControlDivider } from "@/components/MobileTopControls/MobileControlDivider";
-import { MobileMenuButton } from "@/components/MobileTopControls/MobileMenuButton";
-import { MobileSettingsTrigger } from "@/components/MobileTopControls/MobileSettingsTrigger";
+import { DividerLine } from "@/components/DividerLine/DividerLine";
+import { MobileTopBarButton } from "@/components/MobileTopControls/MobileTopBarButton";
 import { SettingsMenuPanelContent } from "@/components/SettingsMenu/SettingsMenuPanelContent";
 import { useSettingsMenuPanel } from "@/components/SettingsMenu/useSettingsMenuPanel";
 import { surfacePanelBaseClass } from "@/lib/surface";
@@ -34,9 +33,9 @@ export function MobileTopControls({
   return (
     <div className={cn("w-[calc(100vw-8px)]", className)} style={style}>
       <div className="flex h-11 w-fit items-stretch">
-        <MobileMenuButton />
-        <MobileControlDivider />
-        <MobileSettingsTrigger isOpen={isOpen} onClick={toggle} />
+        <MobileTopBarButton position="left" />
+        <DividerLine variant="bridge" />
+        <MobileTopBarButton position="right" isOpen={isOpen} onClick={toggle} />
       </div>
 
       {showPanel ? (

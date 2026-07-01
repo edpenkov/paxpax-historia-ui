@@ -11,14 +11,15 @@ This repo is an early-stage UI reference for PaxPax Historia UI. Build in any or
 
 1. **One file = one component** in its own folder when non-trivial: `components/SettingRow/SettingRow.tsx`
 2. **Props-first:** put anything that can change into props (label, icon, onClick, variant, isActive)
-3. **Composition:** compose screens from small components; avoid 400-line monolith JSX
-4. **Hard-code first, extract later:** a hex color in a component is OK; extract to a CSS variable or `variant` prop after 3+ repeats
-5. **Theme:** use Tailwind `dark:` and CSS variables in `globals.css` when colors stabilize — not required on day one
-6. **Responsive — desktop-first:** desktop layout in base classes; overrides via `max-xl:`, `max-lg:`, `max-md:` (not mobile-first `sm:` as default)
-7. **Custom components only** — no HeroUI, shadcn, or other UI libraries
-8. **No pre-built stubs** — add components only when building a real screen
-9. **Icon hit targets** — clickable icons use at least **24×24px** hitbox (`ICON_HITBOX_CLASS` from `@/lib/icon-hitbox`); icon graphic stays centered inside
-10. **Transitions** — use tokens from `@/lib/transitions` + CSS vars in `globals.css`; list in `variables.ts` for UI Kit
+3. **Prefer one component + props over near-duplicates:** if two pieces differ only by role, position, or optional behavior (e.g. button vs link row, left vs right control), use a **single component** with props or a discriminated union — not two files with copy-pasted markup. Split only when structure or lifecycle genuinely diverges.
+4. **Composition:** compose screens from small components; avoid 400-line monolith JSX
+5. **Hard-code first, extract later:** a hex color in a component is OK; extract to a CSS variable or `variant` prop after 3+ repeats
+6. **Theme:** use Tailwind `dark:` and CSS variables in `globals.css` when colors stabilize — not required on day one
+7. **Responsive — desktop-first:** desktop layout in base classes; overrides via `max-xl:`, `max-lg:`, `max-md:` (not mobile-first `sm:` as default)
+8. **Custom components only** — no HeroUI, shadcn, or other UI libraries
+9. **No pre-built stubs** — add components only when building a real screen
+10. **Icon hit targets** — clickable icons use at least **24×24px** hitbox (`ICON_HITBOX_CLASS` from `@/lib/icon-hitbox`); icon graphic stays centered inside
+11. **Transitions** — use tokens from `@/lib/transitions` + CSS vars in `globals.css`; list in `variables.ts` for UI Kit
 
 ## Placeholders
 
@@ -45,7 +46,7 @@ Do not impose token/component phases. Suggest extraction only when a pattern rep
 **Ask the user** (briefly, 1–2 focused questions) when:
 
 - Component **purpose or boundary** is unclear — e.g. is this a one-off screen section or a reusable pattern?
-- Two components look **similar** and might be merged, split, or share a base — propose options, don't silently duplicate
+- Two components look **similar** and might be merged, split, or share a base — prefer **one component + props** unless structure truly diverges; propose merge before adding a sibling file
 - Something looks like it should be **dynamic in production** but you're unsure what to placeholder — confirm what to mock vs skip
 - **Naming or folder placement** is ambiguous — e.g. `patterns/` vs `components/`, screen-specific vs shared
 - You notice **overlap with production concerns** (map, auth, game state) — clarify this repo stays visual-only
@@ -63,7 +64,7 @@ Tools for visually inspecting this repo while building — **not part of game UI
 
 - `src/lib/ui-kit/registry.ts` — metadata (name, path, category, props, values, notes, `viewportToggle`)
 - `src/lib/ui-kit/variables.ts` — global CSS variables (when adding tokens to `globals.css`) and transition tokens
-- `src/components/dev/UiKitPreview.tsx` — live preview for that entry (if previewable)
+- `src/components/dev/ui-kit/` — live preview for that entry (if previewable)
 - `HANDOFF.md` — routes and component inventory
 
 Registry categories (tabs): `general`, `icons`, `components`, `styles`, `dev`, plus a **Variables** tab from `variables.ts`.

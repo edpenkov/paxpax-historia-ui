@@ -1,6 +1,6 @@
 "use client";
 
-import { SettingsCloseIcon } from "@/components/SettingsMenu/SettingsCloseIcon";
+import { SettingsPanelIcon } from "@/components/SettingsMenu/SettingsPanelIcon";
 import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
 import { useSettingsMenuRevealMotion } from "@/components/SettingsMenu/SettingsMenuRevealContext";
@@ -58,7 +58,7 @@ export function SettingsMenuHeader({
           )}
           {...revealMotion}
         >
-          <SettingsCloseIcon className={settingsIconControlIconClass} />
+          <SettingsPanelIcon variant="close" className={settingsIconControlIconClass} />
         </motion.button>
       </header>
 

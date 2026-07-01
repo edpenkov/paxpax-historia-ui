@@ -2,7 +2,7 @@
 
 import { globalCssVariables, globalTransitionVariables } from "@/lib/ui-kit/variables";
 import { surfacePanelClass } from "@/lib/surface";
-import { SettingsGearIcon } from "@/components/SettingsMenu/SettingsGearIcon";
+import { SettingsPanelIcon } from "@/components/SettingsMenu/SettingsPanelIcon";
 import { cn } from "@/lib/cn";
 
 function VariableSwatch({ previewClass, cssVar }: { previewClass?: string; cssVar: string }) {
@@ -14,7 +14,7 @@ function VariableSwatch({ previewClass, cssVar }: { previewClass?: string; cssVa
           previewClass,
         )}
       >
-        {cssVar === "--icon-primary" && <SettingsGearIcon />}
+        {cssVar === "--icon-primary" && <SettingsPanelIcon variant="gear" />}
         {cssVar === "--text-primary" && (
           <span className="text-xs font-medium text-text-primary">Aa</span>
         )}

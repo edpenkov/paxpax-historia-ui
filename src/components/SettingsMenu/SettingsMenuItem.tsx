@@ -1,39 +1,72 @@
 "use client";
 
-import { SettingsMenuChevronIcon } from "@/components/SettingsMenu/SettingsMenuChevronIcon";
+import { SettingsMenuRowTrailingIcon } from "@/components/SettingsMenu/SettingsMenuRowTrailingIcon";
 import { SettingsMenuItemIcon } from "@/components/SettingsMenu/SettingsMenuItemIcon";
-import { settingsMenuRowChevronClass, settingsMenuRowIconClass, settingsMenuRowLabelClass } from "@/components/SettingsMenu/settingsMenuRowStyles";
+import {
+  settingsMenuRowChevronClass,
+  settingsMenuRowExternalLinkClass,
+  settingsMenuRowIconClass,
+  settingsMenuRowLabelClass,
+} from "@/components/SettingsMenu/settingsMenuRowStyles";
 import { useSettingsMenuReveal } from "@/components/SettingsMenu/SettingsMenuRevealContext";
 import { cn } from "@/lib/cn";
 import { motion } from "motion/react";
 
-type SettingsMenuItemProps = {
+type SettingsMenuItemBase = {
   icon: string;
   label: string;
-  onClick?: () => void;
   className?: string;
 };
 
-export function SettingsMenuItem({ icon, label, onClick, className }: SettingsMenuItemProps) {
+type SettingsMenuItemButtonProps = SettingsMenuItemBase & {
+  href?: undefined;
+  onClick?: () => void;
+};
+
+type SettingsMenuItemLinkProps = SettingsMenuItemBase & {
+  href: string;
+  onClick?: never;
+};
+
+export type SettingsMenuItemProps = SettingsMenuItemButtonProps | SettingsMenuItemLinkProps;
+
+const rowClassName = "group relative flex w-full cursor-pointer items-center text-left transition-opacity";
+
+function SettingsMenuRowContent({ icon, label }: Pick<SettingsMenuItemProps, "icon" | "label">) {
   const settingsMenuReveal = useSettingsMenuReveal();
 
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "group relative flex w-full cursor-pointer items-center text-left transition-opacity",
-        className,
-      )}
-    >
-      <motion.div
-        className="flex min-w-0 flex-1 items-center gap-6"
-        {...settingsMenuReveal}
+    <motion.div className="flex min-w-0 flex-1 items-center gap-6" {...settingsMenuReveal}>
+      <SettingsMenuItemIcon name={icon} className={settingsMenuRowIconClass} />
+      <span className={cn("min-w-0", settingsMenuRowLabelClass)}>{label}</span>
+    </motion.div>
+  );
+}
+
+export function SettingsMenuItem(props: SettingsMenuItemProps) {
+  const { icon, label, className } = props;
+
+  if (props.href) {
+    return (
+      <motion.a
+        href={props.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(rowClassName, className)}
       >
-        <SettingsMenuItemIcon name={icon} className={settingsMenuRowIconClass} />
-        <span className={cn("min-w-0", settingsMenuRowLabelClass)}>{label}</span>
-      </motion.div>
-      <SettingsMenuChevronIcon className={settingsMenuRowChevronClass} />
+        <SettingsMenuRowContent icon={icon} label={label} />
+        <SettingsMenuRowTrailingIcon
+          variant="external-link"
+          className={settingsMenuRowExternalLinkClass}
+        />
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.button type="button" onClick={props.onClick} className={cn(rowClassName, className)}>
+      <SettingsMenuRowContent icon={icon} label={label} />
+      <SettingsMenuRowTrailingIcon variant="chevron" className={settingsMenuRowChevronClass} />
     </motion.button>
   );
 }

@@ -148,7 +148,7 @@ Individual components note placeholder status in the inventory below when releva
 
 ### `GameScreen/GameScreen.tsx`
 
-Main game UI shell. Server component (no `"use client"`).
+Main game UI shell. Client component (`"use client"`) — prominence layer uses `useState`.
 
 - Full viewport: `h-dvh w-full overflow-hidden`
 - **Map layer (placeholder):** native `<img>` → `/assets/background.png`
@@ -163,7 +163,7 @@ Accepts `children` for UI overlays (header, panels, etc.) rendered above the map
 
 ### `DesktopHeader/DesktopHeader.tsx`
 
-Desktop-only top bar. Server component. Hidden below `md` breakpoint — mobile header will be a separate component later.
+Desktop-only top bar. Server component. Hidden below `md` — mobile uses `MobileTopControls`.
 
 - **Position:** `absolute top-0`, full width, `z-10` (above map)
 - **Size:** `h-12` (48px)
@@ -178,7 +178,7 @@ Used in `page.tsx` as a child of `GameScreen`.
 
 ### `ProminenceAnchor/` + `ProminenceBackdropPlaced.tsx`
 
-Reusable blurred dark region to darken/blur the map under UI. Portaled into z-[1] prominence layer (above map, below UI). Game screen: `fixed inset-0` + viewport coords. UI Kit previews: `containProminence` on `GameScreenShell` for an absolute in-shell layer.
+Reusable blurred dark region to darken/blur the map under UI. Portaled into z-[1] prominence layer (above map, below UI). Game screen: `fixed inset-0` + viewport coords. UI Kit previews: `containProminence` on `GameScreen` for an absolute in-shell layer.
 
 **Two-layer effect** (separate elements — do not combine on one node):
 
@@ -194,9 +194,9 @@ Reusable blurred dark region to darken/blur the map under UI. Portaled into z-[1
 
 **First use:** `DesktopHeader` logo cluster — `expand: { top: 62, right: 202, bottom: 62, left: 202 }`.
 
-`GameScreenShell` (client) owns map layer, prominence layer, and UI layer stacking.
+`GameScreen` (client) owns map layer, prominence layer, and UI layer stacking.
 
-### `SettingsMenu/` (+ `SettingsMenuHeader`, `SettingsGearIcon`, `SettingsCloseIcon`)
+### `SettingsMenu/` (+ `SettingsMenuHeader`, `SettingsPanelIcon`)
 
 Settings panel (`src/components/SettingsMenu/`). Client component. **Desktop only** expand (`md+`).
 
@@ -269,7 +269,7 @@ Shared primary panel chrome — settings trigger, future modals/panels.
 | File | URL | Used by |
 |------|-----|---------|
 | `background.png` | `/assets/background.png` | `GameScreen` |
-| `settings-gear.svg` | `/settings-gear.svg` | Source reference for `SettingsGearIcon` (inlined in component) |
+| `settings-gear.svg` | `/settings-gear.svg` | Source reference for `SettingsPanelIcon` gear (inlined in component) |
 
 Menu icons: `public/icons/menu/*.svg` → served at `/icons/menu/` (used by `SettingsMenuItemIcon`).
 
@@ -304,8 +304,7 @@ Full list: `package.json`.
 | `src/app/page.tsx` | Server |
 | `src/app/ui-kit/page.tsx` | Server |
 | `src/app/ui-kit/layout.tsx` | Server |
-| `src/components/GameScreen/GameScreen.tsx` | Server |
-| `src/components/GameScreen/GameScreenShell.tsx` | Client |
+| `src/components/GameScreen/GameScreen.tsx` | Client |
 | `src/components/DesktopHeader/DesktopHeader.tsx` | Server |
 | `src/components/ProminenceAnchor/ProminenceAnchor.tsx` | Client |
 | `src/components/ProminenceAnchor/ProminenceBackdropPlaced.tsx` | Server (portaled) |
@@ -350,7 +349,8 @@ Details: [AGENTS.md](./AGENTS.md), `.cursor/rules/component-conventions.mdc`.
 | Game screen shell | `src/components/GameScreen/` + route `/` | Layout wrapper; accepts overlay `children` |
 | Map background | inside `GameScreen` | **Placeholder** — static `<img>`; production = live map |
 | Desktop header | `src/components/DesktopHeader/` | Desktop only (`md+`); 48px; logo cluster + `ProminenceAnchor` |
-| Settings menu | `src/components/SettingsMenu/` | Desktop: 34×34 → 420×420 panel with header |
+| Mobile top controls | `src/components/MobileTopControls/` | Below `md`: `MobileTopBarButton` (left/right) + dropdown settings panel |
+| Settings menu | `src/components/SettingsMenu/` | Desktop morph trigger; `SettingsMenuItem` = button row or link row (`href`) |
 | Divider line | `src/components/DividerLine/` | `text-primary` at 10% opacity |
 | Dev theme toggle | `src/components/dev/DevThemeToggle.tsx` | Bottom-center Light/Dark (not game UI) |
 | UI Kit | `/ui-kit` + `src/lib/ui-kit/registry.ts` | Living component catalog for inspection |
@@ -371,11 +371,12 @@ layout.tsx
 page.tsx
   └── GameScreen.tsx
         ├── /assets/background.png (placeholder — static map stand-in)
-        ├── DesktopHeader.tsx
-        └── SettingsMenu.tsx → SettingsGearIcon, surfacePanelClass
+        ├── DesktopHeader.tsx (md+)
+        ├── MobileTopControls.tsx (below md)
+        └── SettingsMenu.tsx (md+)
 
 ui-kit/page.tsx
-  └── UiKitView.tsx → registry.ts, UiKitPreview.tsx
+  └── UiKitView.tsx → registry.ts, src/components/dev/ui-kit/
 ```
 
 ---

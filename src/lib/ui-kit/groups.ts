@@ -4,10 +4,28 @@ import { getUiKitEntriesByCategory, type UiKitEntry } from "@/lib/ui-kit/registr
 /** Display order for section headings within each tab. */
 export const uiKitGroupOrder: Record<UiKitCategory, string[]> = {
   general: ["Primitives"],
-  icons: ["Header", "Settings panel", "Settings menu"],
-  components: ["Screen shell", "Header", "Mobile header", "Settings menu", "Map overlay"],
+  icons: ["Header — desktop", "Header — mobile", "Settings panel", "Settings menu"],
+  components: [
+    "Screen shell",
+    "Header — desktop",
+    "Header — mobile",
+    "Settings menu",
+    "Map overlay",
+  ],
   styles: ["Surfaces", "Animations", "Hover states", "Interaction"],
   dev: ["Dev tools"],
+};
+
+/** Short context shown under each group heading in `/ui-kit`. */
+export const uiKitGroupDescriptions: Partial<Record<string, string>> = {
+  "Screen shell":
+    "Full-viewport layout. Toggle Desktop / Mobile to see md+ vs below-md chrome.",
+  "Header — desktop":
+    "md+ only. Full-width bar with logo cluster. Mobile uses Header — mobile instead.",
+  "Header — mobile":
+    "Below md. Top-left 89×44 control row; settings panel drops below (not a morphing trigger).",
+  "Settings menu":
+    "Shared panel content. Desktop trigger morphs in place; mobile opens from MobileTopControls.",
 };
 
 export type UiKitEntryGroup = {

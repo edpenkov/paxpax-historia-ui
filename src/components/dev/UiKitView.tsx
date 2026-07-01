@@ -3,7 +3,7 @@
 import { UiKitPreview, type UiKitViewport } from "@/components/dev/UiKitPreview";
 import { UiKitVariablesPanel } from "@/components/dev/UiKitVariablesPanel";
 import { uiKitTabs, type UiKitTabId } from "@/lib/ui-kit/categories";
-import { getUiKitEntriesGrouped, type UiKitEntryGroup } from "@/lib/ui-kit/groups";
+import { getUiKitEntriesGrouped, uiKitGroupDescriptions, type UiKitEntryGroup } from "@/lib/ui-kit/groups";
 import type { UiKitEntry } from "@/lib/ui-kit/registry";
 import { cn } from "@/lib/cn";
 import { useState } from "react";
@@ -172,8 +172,37 @@ function UiKitEntryDetails({ entry }: { entry: UiKitEntry }) {
   );
 }
 
+function RelatedEntries({ entries }: { entries: NonNullable<UiKitEntry["relatedEntries"]> }) {
+  return (
+    <p className="mb-3 text-xs text-black/55 dark:text-white/55">
+      Related:{" "}
+      {entries.map((link, index) => (
+        <span key={link.id}>
+          {index > 0 ? ", " : null}
+          <a href={`#${link.id}`} className="underline hover:text-black dark:hover:text-white">
+            {link.label}
+          </a>
+        </span>
+      ))}
+    </p>
+  );
+}
+
+function PreviewViewportHint({ viewport }: { viewport: NonNullable<UiKitEntry["previewViewport"]> }) {
+  return (
+    <p className="mb-3 text-xs text-black/55 dark:text-white/55">
+      {viewport === "mobile"
+        ? "Mobile-only preview (375px frame)"
+        : "Desktop-only preview (full width frame)"}
+    </p>
+  );
+}
+
 function UiKitEntryCard({ entry }: { entry: UiKitEntry }) {
-  const [viewport, setViewport] = useState<UiKitViewport>("desktop");
+  const [toggleViewport, setToggleViewport] = useState<UiKitViewport>("desktop");
+  const showToggle = Boolean(entry.viewportToggle && !entry.previewViewport);
+  const previewViewport =
+    entry.previewViewport ?? (showToggle ? toggleViewport : undefined);
 
   return (
     <section
@@ -181,13 +210,15 @@ function UiKitEntryCard({ entry }: { entry: UiKitEntry }) {
       className="scroll-mt-6 rounded-lg border border-black/10 bg-white p-6 dark:border-white/10 dark:bg-neutral-950"
     >
       <h2 className="mb-4 text-lg font-semibold text-text-primary">{entry.name}</h2>
-      {entry.viewportToggle && (
-        <ViewportToggle value={viewport} onChange={setViewport} />
-      )}
-      <UiKitPreview
-        entryId={entry.id}
-        viewport={entry.viewportToggle ? viewport : undefined}
-      />
+      {entry.relatedEntries && entry.relatedEntries.length > 0 ? (
+        <RelatedEntries entries={entry.relatedEntries} />
+      ) : null}
+      {showToggle ? (
+        <ViewportToggle value={toggleViewport} onChange={setToggleViewport} />
+      ) : entry.previewViewport ? (
+        <PreviewViewportHint viewport={entry.previewViewport} />
+      ) : null}
+      <UiKitPreview entryId={entry.id} viewport={previewViewport} />
       <UiKitEntryDetails entry={entry} />
     </section>
   );
@@ -285,7 +316,7 @@ export function UiKitView() {
           </code>
           , and previews in{" "}
           <code className="rounded bg-black/5 px-1 py-0.5 text-xs dark:bg-white/10">
-            UiKitPreview.tsx
+            src/components/dev/ui-kit/
           </code>{" "}
           when adding UI.
         </p>
@@ -301,9 +332,16 @@ export function UiKitView() {
           <div className="space-y-12">
             {activeGroups.map((group) => (
               <section key={group.label} id={groupSectionId(group.label)} className="scroll-mt-6">
-                <h2 className="mb-6 border-b border-black/10 pb-2 text-sm font-semibold uppercase tracking-wide text-black/45 dark:border-white/10 dark:text-white/45">
+                <h2 className="mb-2 border-b border-black/10 pb-2 text-sm font-semibold uppercase tracking-wide text-black/45 dark:border-white/10 dark:text-white/45">
                   {group.label}
                 </h2>
+                {uiKitGroupDescriptions[group.label] ? (
+                  <p className="mb-6 max-w-2xl text-sm text-black/60 dark:text-white/60">
+                    {uiKitGroupDescriptions[group.label]}
+                  </p>
+                ) : (
+                  <div className="mb-6" />
+                )}
                 <div className="space-y-8">
                   {group.entries.map((entry) => (
                     <UiKitEntryCard key={entry.id} entry={entry} />
