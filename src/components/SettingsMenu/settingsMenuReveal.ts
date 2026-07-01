@@ -3,16 +3,25 @@ import { motionTransition, uiTransition } from "@/lib/transitions";
 
 export type SettingsMenuRevealAxis = "x" | "y";
 
-/** Main menu reveal — mobile uses Y (panel drops from top); desktop uses X. */
+/** Main menu reveal (step 1) — mobile Y, desktop X. */
 export function getMainMenuRevealMotion(
   isMobile: boolean,
   direction: PanelNavigateDirection,
 ) {
+  return getRevealMotion(isMobile ? "y" : "x", direction);
+}
+
+/** Breadcrumbs + step 2+ header chrome — always X (mobile and desktop). */
+export function getSubPageRevealMotion(direction: PanelNavigateDirection) {
+  return getRevealMotion("x", direction);
+}
+
+function getRevealMotion(axis: SettingsMenuRevealAxis, direction: PanelNavigateDirection) {
   const offset = uiTransition.revealOffsetPx;
   const transition = motionTransition.medium;
   const isForward = direction === "forward";
 
-  if (isMobile) {
+  if (axis === "y") {
     return {
       initial: { opacity: 0, y: isForward ? -offset : offset },
       animate: { opacity: 1, y: 0 },

@@ -9,4 +9,6 @@ export type PanelNavigateTransitionOptions = {
   axis: PanelNavigateAxis;
   direction: PanelNavigateDirection;
   speed: MotionTransitionSpeed;
+  /** Body pages fade+slide; header breadcrumbs slide only (avoids blink). Default true. */
+  fade?: boolean;
 };

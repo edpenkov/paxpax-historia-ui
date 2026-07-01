@@ -202,11 +202,13 @@ Settings panel (`src/components/SettingsMenu/`). Client components. Shared panel
 
 **Desktop** (`SettingsMenu.tsx`, `md+`): gear trigger morphs in place (34×34 → 420px wide). **Mobile** (`MobileTopControls.tsx`, below `md`): top-bar buttons + panel drops below.
 
-**Panel shell (behavior):** `useSettingsMenuPanel` → `useAnimatedPanelShell`. Main menu = content-driven height; sub-pages = viewport-locked height. Resizes on open/close, height mode, window resize — not on slide direction.
+**Panel shell (behavior):** `useSettingsMenuPanel` → `useAnimatedPanelShell`. Main menu = content-driven height; sub-pages = viewport-locked height. Shell resizes on open/close, height mode, window resize — independent of slide direction.
 
-**In-panel navigation (style):** `usePanelNavigation` + `PanelNavigateView`. Forward/back X or Y slides between main menu, sub-sections, and nested pages. See `settingsMenuSection.ts` for route types and axis rules.
+**In-panel navigation (style):** `usePanelNavigation` + `getPanelNavigateTransition` on body (step 2+, always X, `fast`). Step 2↔3 uses the same forward/back page slide as main↔sub.
 
-**Open animation:** row reveal on first open (X-only via `SettingsMenuRevealProvider`); page slides on drill-down only.
+**Step-1 reveal:** `getMainMenuRevealMotion` on title + rows (`medium`; mobile Y, desktop X). **Breadcrumbs:** `getSubPageRevealMotion` (always X, reveal not page transition).
+
+**Desktop accordion:** `settingsMenuAccordionTransition` — in-place Y/height only; excluded from page navigation.
 
 **Registry / UI Kit:** `SettingsMenu`, related icons, and **Panel patterns** utilities in `registry.ts`.
 
@@ -272,7 +274,7 @@ Independent of in-panel slide direction. Consumer example: `SettingsMenu/useSett
 
 ### `panelNavigation/` — in-panel slide **style**
 
-`usePanelNavigation`, `PanelNavigateView`, `PanelBreadcrumbs`, `getPanelNavigateTransition` — forward/back X or Y slides when the route stack changes.
+`usePanelNavigation`, `getPanelNavigateTransition`, `PanelBreadcrumbs` — forward/back **X** page slides when the route stack changes (step 2+). Step 1 uses `settingsMenuReveal.ts` instead (mobile Y on main menu only).
 
 Does not resize the shell. Consumer example: `SettingsMenu/SettingsMenuPanelContent.tsx`.
 

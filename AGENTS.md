@@ -41,21 +41,31 @@ Listed in `package.json`. Runtime deps used in code today: `next-themes`, `clsx`
 
 ## Panel patterns (drill-down panels)
 
-Expanding panels with in-panel navigation use **two independent libs** — do not merge their lifecycle or timing.
+Expanding panels use **two independent libs** — do not merge their lifecycle or timing.
 
 | Lib | Role | Triggers |
 |-----|------|----------|
 | `@/lib/panelShell` | **Behavior** — shell width/height | open/close, `content` ↔ `viewport` height mode, window resize, content remeasure |
-| `@/lib/panelNavigation` | **Style** — forward/back slide | route changes only (forward vs back, X vs Y axis) |
+| `@/lib/panelNavigation` | **Style** — forward/back page slide | route changes only (step 2+ body; always X) |
+
+**Animation tiers in Settings (reference consumer):**
+
+| Tier | What moves | Token / API | When |
+|------|------------|-------------|------|
+| Shell | Panel width/height, radius | `panelSizeTransitionClass` + `useAnimatedPanelShell` | Gear open, main↔sub height mode, resize — **not** slide direction |
+| Page slide | Sub-page body content | `getPanelNavigateTransition` (`fast`, X) | Step 2↔3, main↔sub body; forward enter +X, forward exit off right |
+| Step-1 reveal | Main title + menu rows | `getMainMenuRevealMotion` (`medium`) | Panel open / back to main; mobile Y, desktop X |
+| Sub-header reveal | Breadcrumbs | `getSubPageRevealMotion` (`medium`, always X) | Entering step 2+; keyed by `navDirection` only |
+| Accordion | Desktop nested rows only | `settingsMenuAccordionTransition` | Expand/collapse in place — **not** page navigation |
 
 **Rules:**
 
 1. Shell size uses `useAnimatedPanelShell` + measured px height + `panelSizeTransitionClass`. Never drive height from slide direction.
-2. Page swaps use `usePanelNavigation` + `PanelNavigateView` (+ `PanelBreadcrumbs` when needed).
-3. Consumer-specific route types and labels stay in the feature folder (e.g. `SettingsMenu/settingsMenuSection.ts`); reuse the generic hooks/components from `lib/`.
-4. First reference implementation: `SettingsMenu` (desktop morph) + `MobileTopControls` (mobile dropdown).
+2. Page swaps use `usePanelNavigation` + `getPanelNavigateTransition` on body (`AnimatePresence` or `PanelNavigateView`). Breadcrumbs use reveal helpers — **not** page transitions (`AnimatePresence` sync/wait caused glitches).
+3. Consumer-specific routes/labels stay in the feature folder (e.g. `settingsMenuSection.ts`).
+4. First reference: `SettingsMenu` (desktop morph) + `MobileTopControls` (mobile dropdown).
 
-UI Kit → **Styles → Panel patterns** has brief discovery entries. Full contract lives here and in [HANDOFF.md](./HANDOFF.md#utilities-srclib).
+UI Kit → **Styles → Panel patterns**. Full reference: [HANDOFF.md](./HANDOFF.md#utilities-srclib).
 
 ## Repo-only files
 

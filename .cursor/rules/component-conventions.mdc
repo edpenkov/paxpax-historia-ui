@@ -26,12 +26,11 @@ This repo is an early-stage UI reference for PaxPax Historia UI. Build in any or
 
 When building an expanding panel with internal drill-down:
 
-- **`useAnimatedPanelShell`** — `contentRef`, `animatedHeight`, open/close. Pair inner content with `panelSizeTransitionClass` and a **px** height (CSS cannot animate to `auto`).
-- **`usePanelNavigation` + `PanelNavigateView`** — route stack, direction, axis, slide variants. Use `fast` for sub-pages, `medium` for top-level swaps.
-- Feature-specific routes/labels stay in the consumer (e.g. `settingsMenuSection.ts`); extract to `lib/` only when a second panel needs the same hooks unchanged.
-- Reference: `SettingsMenu/` + `MobileTopControls/`.
-
-UI Kit lists both under **Styles → Panel patterns** for discovery only — not the full architecture doc.
+- **`useAnimatedPanelShell`** — shell size only (open/close, height mode, resize). `panelSizeTransitionClass` + px height.
+- **`usePanelNavigation` + `getPanelNavigateTransition`** — step 2+ body page slide (`fast`, always X). Forward: new page enters left→right, old exits right.
+- **`getMainMenuRevealMotion`** — step 1 title + rows (`medium`; mobile Y, desktop X). **`getSubPageRevealMotion`** — breadcrumbs (always X, keyed by direction).
+- **Accordion** (`settingsMenuAccordionTransition`) — desktop-only in-place expand; not page nav.
+- Reference: `SettingsMenu/` + `MobileTopControls/`. See AGENTS.md animation tier table.
 
 
 Many parts of this repo are **UI placeholders** — simplified stand-ins for layout and visuals, not production behavior.

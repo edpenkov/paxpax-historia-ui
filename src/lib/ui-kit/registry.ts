@@ -638,7 +638,7 @@ export const uiKitEntries: UiKitEntry[] = [
     group: "Panel patterns",
     kind: "utility",
     description:
-      "Style: forward/back X or Y slide when swapping in-panel routes. Does not resize the shell.",
+      "Style: forward/back X page slide when swapping in-panel routes (step 2+). Does not resize the shell.",
     relatedEntries: [
       { id: "panel-shell", label: "panelShell (size behavior)" },
       { id: "settings-menu", label: "SettingsMenu (consumer)" },
@@ -648,7 +648,7 @@ export const uiKitEntries: UiKitEntry[] = [
       "PanelNavigateView — AnimatePresence wrapper with getPanelNavigateTransition.",
       "PanelBreadcrumbs — generic breadcrumb trail for drill-down headers.",
       "fast (100ms) for sub-pages; medium (200ms) for main menu swaps.",
-      "+X forward enter, −X forward exit; reversed for back. Y reserved for mobile main reveal only.",
+      "Forward enter +X (left→right, same as main menu). Forward exit slides off right. Back reversed.",
     ],
   },
   {

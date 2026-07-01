@@ -36,3 +36,7 @@ export function useSettingsMenuReveal() {
   const { isMobile, direction } = useContext(SettingsMenuRevealContext);
   return getMainMenuRevealMotion(isMobile, direction);
 }
+
+export function useSettingsMenuRevealDirection() {
+  return useContext(SettingsMenuRevealContext).direction;
+}

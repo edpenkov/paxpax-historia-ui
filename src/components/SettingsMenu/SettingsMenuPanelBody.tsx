@@ -53,10 +53,10 @@ export function SettingsMenuPanelBody({
         className,
       )}
     >
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence mode="wait">
         {isMain ? (
           <motion.div
-            key="main"
+            key={`main-${navDirection}`}
             initial={false}
             animate={{ opacity: 1 }}
             exit={mainLeave.exit}

@@ -8,7 +8,7 @@ import {
   settingsMenuRowIconClass,
   settingsMenuRowLabelClass,
 } from "@/components/SettingsMenu/settingsMenuRowStyles";
-import { useSettingsMenuReveal } from "@/components/SettingsMenu/SettingsMenuRevealContext";
+import { useSettingsMenuReveal, useSettingsMenuRevealDirection } from "@/components/SettingsMenu/SettingsMenuRevealContext";
 import { cn } from "@/lib/cn";
 import { motion } from "motion/react";
 
@@ -34,9 +34,14 @@ const rowClassName = "group relative flex w-full cursor-pointer items-center tex
 
 function SettingsMenuRowContent({ icon, label }: Pick<SettingsMenuItemProps, "icon" | "label">) {
   const settingsMenuReveal = useSettingsMenuReveal();
+  const direction = useSettingsMenuRevealDirection();
 
   return (
-    <motion.div className="flex min-w-0 flex-1 items-center gap-6" {...settingsMenuReveal}>
+    <motion.div
+      key={`${label}-${direction}`}
+      className="flex min-w-0 flex-1 items-center gap-6"
+      {...settingsMenuReveal}
+    >
       <SettingsMenuItemIcon name={icon} className={settingsMenuRowIconClass} />
       <span className={cn("min-w-0", settingsMenuRowLabelClass)}>{label}</span>
     </motion.div>
