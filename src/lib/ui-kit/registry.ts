@@ -425,8 +425,28 @@ export const uiKitEntries: UiKitEntry[] = [
     group: "Settings menu",
     kind: "component",
     description:
-      "Settings panel header: game name + play-as line, close button, divider. Title slot changes per menu state; close stays.",
+      "Settings panel header: game name + play-as, breadcrumbs (sub-section and nested mobile), close button, divider.",
     props: [
+      {
+        name: "section",
+        type: "SettingsMenuSection",
+        description: "Current navigation section (main, sub-section, or nested path on mobile).",
+      },
+      {
+        name: "navDirection",
+        type: '"forward" | "back"',
+        description: "Main title reveal direction. Sub-sections use page slide (+X forward, −X back).",
+      },
+      {
+        name: "isMobileLayout",
+        type: "boolean",
+        description: "Main menu uses Y reveal on mobile; X on desktop. Steps 2+ always X.",
+      },
+      {
+        name: "onNavigate",
+        type: "(section: SettingsMenuSection) => void",
+        description: "Breadcrumb navigation handler.",
+      },
       {
         name: "onClose",
         type: "() => void",
@@ -443,11 +463,6 @@ export const uiKitEntries: UiKitEntry[] = [
         type: "string",
         defaultValue: '"Playing as USA"',
         description: "Placeholder play-as line.",
-      },
-      {
-        name: "title",
-        type: "ReactNode",
-        description: "Overrides gameName/playAs for other menu states.",
       },
     ],
     values: [
@@ -476,6 +491,37 @@ export const uiKitEntries: UiKitEntry[] = [
       { label: "Row gap", light: "16px (gap-4)", dark: "same" },
       { label: "Menu rows", light: "5 (button)", dark: "same" },
       { label: "Link rows", light: "2 (external)", dark: "same" },
+    ],
+  },
+  {
+    id: "settings-sub-section-row",
+    name: "SettingsSubSectionRow",
+    importPath: "src/components/SettingsMenu/SettingsSubSectionRow.tsx",
+    category: "components",
+    group: "Settings menu",
+    kind: "component",
+    description:
+      "Game/User sub-section row — desktop accordion (chevron rotate 90°/−90°, Y expand) or mobile nav row (chevron right, page drill-down).",
+    props: [
+      { name: "label", type: "string", description: "Row label." },
+      { name: "isOpen", type: "boolean", description: "Desktop accordion open state." },
+      { name: "onPress", type: "() => void", description: "Toggle accordion or navigate on mobile." },
+      { name: "isMobileLayout", type: "boolean", description: "Mobile panel — page navigation instead of accordion." },
+      { name: "children", type: "ReactNode", description: "Desktop accordion panel content." },
+    ],
+  },
+  {
+    id: "game-settings-section-content",
+    name: "GameSettingsSectionContent",
+    importPath: "src/components/SettingsMenu/GameSettingsSectionContent.tsx",
+    category: "components",
+    group: "Settings menu",
+    kind: "component",
+    viewportToggle: true,
+    description: "Game settings section body — placeholder blocks, dividers, Advisor UI + Maps and Display sub-section rows.",
+    props: [
+      { name: "isMobileLayout", type: "boolean", description: "Accordion vs page navigation for nested rows." },
+      { name: "onOpenNested", type: "(nested) => void", description: "Mobile drill-down handler." },
     ],
   },
   {
@@ -585,6 +631,46 @@ export const uiKitEntries: UiKitEntry[] = [
     notes: ["Pair with measured px height — CSS cannot transition to height: auto."],
   },
   {
+    id: "panel-navigation",
+    name: "panelNavigation",
+    importPath: "src/lib/panelNavigation/index.ts",
+    category: "styles",
+    group: "Panel patterns",
+    kind: "utility",
+    description:
+      "Style: forward/back X or Y slide when swapping in-panel routes. Does not resize the shell.",
+    relatedEntries: [
+      { id: "panel-shell", label: "panelShell (size behavior)" },
+      { id: "settings-menu", label: "SettingsMenu (consumer)" },
+    ],
+    notes: [
+      "usePanelNavigation — route, direction, axis, navigate, reset.",
+      "PanelNavigateView — AnimatePresence wrapper with getPanelNavigateTransition.",
+      "PanelBreadcrumbs — generic breadcrumb trail for drill-down headers.",
+      "fast (100ms) for sub-pages; medium (200ms) for main menu swaps.",
+      "+X forward enter, −X forward exit; reversed for back. Y reserved for mobile main reveal only.",
+    ],
+  },
+  {
+    id: "panel-shell",
+    name: "panelShell",
+    importPath: "src/lib/panelShell/index.ts",
+    category: "styles",
+    group: "Panel patterns",
+    kind: "utility",
+    description:
+      "Behavior: animates panel width/height when layout context changes — open/close, content vs viewport mode, window resize, content remeasure.",
+    relatedEntries: [
+      { id: "panel-navigation", label: "panelNavigation (slide style)" },
+      { id: "panel-size-transition-class", label: "panelSizeTransitionClass" },
+    ],
+    notes: [
+      "useAnimatedPanelShell — contentRef, animatedHeight, open/close/toggle.",
+      "heightMode content = measure inner content; viewport = calc(100dvh − insets).",
+      "Never tie shell height timing to page slide direction — they are independent.",
+    ],
+  },
+  {
     id: "icon-hitbox-class",
     name: "ICON_HITBOX_CLASS",
     importPath: "src/lib/icon-hitbox.ts",
@@ -662,16 +748,26 @@ export const uiKitEntries: UiKitEntry[] = [
     group: "Animations",
     kind: "style",
     description:
-      "Motion slide-in for settings menu rows and header. Desktop: opacity + x. Mobile: opacity + y.",
+      "Main menu reveal motion. Forward: desktop +X, mobile −Y. Back: desktop −X, mobile +Y. Steps 2+ use panelNavigation (+X forward, −X back).",
     values: [
       {
-        label: "Initial (desktop)",
-        light: "opacity 0, x −10px",
+        label: "Forward (desktop)",
+        light: "opacity 0, x −10px → 0 (slides +X)",
         dark: "same",
       },
       {
-        label: "Initial (mobile)",
+        label: "Back (desktop)",
+        light: "opacity 0, x +10px → 0 (slides −X)",
+        dark: "same",
+      },
+      {
+        label: "Forward (mobile main)",
         light: "opacity 0, y −10px",
+        dark: "same",
+      },
+      {
+        label: "Back (mobile main)",
+        light: "opacity 0, y +10px",
         dark: "same",
       },
       {
@@ -687,7 +783,8 @@ export const uiKitEntries: UiKitEntry[] = [
     ],
     viewportToggle: true,
     notes: [
-      "Use Desktop / Mobile toggle. Mobile uses y-axis slide-in via SettingsMenuRevealProvider.",
+      "Use Desktop / Mobile toggle. Y is only for main menu reveal on mobile.",
+      "Page slides (breadcrumbs, sub-content): always X — +X forward, −X back.",
     ],
   },
   {

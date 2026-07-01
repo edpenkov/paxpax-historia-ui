@@ -6,7 +6,9 @@
   --background-primary: rgba(221, 234, 243, 0.8);
   --icon-primary: #00021e;
   --text-primary: #00021e;
-  --duration-ui: 200ms;
+  --duration-ui-fast: 100ms;
+  --duration-ui-medium: 200ms;
+  --duration-ui: var(--duration-ui-medium);
   --ease-ui: ease;
   --reveal-offset: 10px;
 }

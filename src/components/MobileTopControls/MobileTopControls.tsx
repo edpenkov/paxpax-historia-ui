@@ -3,11 +3,15 @@
 import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { MobileTopBarButton } from "@/components/MobileTopControls/MobileTopBarButton";
 import { SettingsMenuPanelContent } from "@/components/SettingsMenu/SettingsMenuPanelContent";
-import { useSettingsMenuPanel } from "@/components/SettingsMenu/useSettingsMenuPanel";
+import type { SettingsMenuSection } from "@/components/SettingsMenu/settingsMenuSection";
+import {
+  useSettingsMenuPanel,
+  type SettingsMenuPanelHeightMode,
+} from "@/components/SettingsMenu/useSettingsMenuPanel";
 import { surfacePanelBaseClass } from "@/lib/surface";
 import { panelSizeTransitionClass } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
-import type { CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 
 type MobileTopControlsProps = {
   className?: string;
@@ -27,8 +31,27 @@ export function MobileTopControls({
   playAs,
   defaultOpen = false,
 }: MobileTopControlsProps) {
-  const { contentRef, showPanel, isOpen, animatedHeight, toggle, close } =
-    useSettingsMenuPanel(defaultOpen, "mobile");
+  const [heightMode, setHeightMode] = useState<SettingsMenuPanelHeightMode>("content");
+  const [section, setSection] = useState<SettingsMenuSection>("main");
+
+  const handleSectionChange = useCallback((next: SettingsMenuSection) => {
+    setSection(next);
+    setHeightMode(next === "main" ? "content" : "viewport");
+  }, []);
+
+  const { contentRef, showPanel, isOpen, animatedHeight, toggle, close } = useSettingsMenuPanel(
+    defaultOpen,
+    "mobile",
+    heightMode,
+    section,
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      setHeightMode("content");
+      setSection("main");
+    }
+  }, [isOpen]);
 
   return (
     <div className={cn("w-[calc(100vw-8px)]", className)} style={style}>
@@ -56,7 +79,7 @@ export function MobileTopControls({
             onClose={close}
             isVisible={isOpen}
             fullWidth
-            revealAxis="y"
+            onSectionChange={handleSectionChange}
             className="w-full"
           />
         </div>

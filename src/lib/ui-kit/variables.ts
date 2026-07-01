@@ -41,10 +41,22 @@ export type GlobalTransitionVariable = {
 /** Transition tokens — sync with `src/lib/transitions.ts` and `globals.css`. */
 export const globalTransitionVariables: GlobalTransitionVariable[] = [
   {
-    cssVar: "--duration-ui",
-    label: "UI duration",
+    cssVar: "--duration-ui-fast",
+    label: "UI duration (fast)",
+    value: "100ms",
+    notes: "Sub-page navigation, mobile drill-down",
+  },
+  {
+    cssVar: "--duration-ui-medium",
+    label: "UI duration (medium)",
     value: "200ms",
-    notes: "Panel size, general UI transitions",
+    notes: "Main menu, panel size, desktop accordion",
+  },
+  {
+    cssVar: "--duration-ui",
+    label: "UI duration (default)",
+    value: "200ms",
+    notes: "Alias of --duration-ui-medium for legacy classes",
   },
   {
     cssVar: "--ease-ui",

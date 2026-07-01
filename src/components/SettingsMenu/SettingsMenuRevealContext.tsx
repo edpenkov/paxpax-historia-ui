@@ -1,36 +1,38 @@
 "use client";
 
-import {
-  getSettingsMenuReveal,
-  getSettingsMenuRevealMotion,
-  type SettingsMenuRevealAxis,
-} from "@/components/SettingsMenu/settingsMenuReveal";
+import { getMainMenuRevealMotion } from "@/components/SettingsMenu/settingsMenuReveal";
+import type { PanelNavigateDirection } from "@/lib/panelNavigation/types";
 import { createContext, useContext, type ReactNode } from "react";
 
-const SettingsMenuRevealContext = createContext<SettingsMenuRevealAxis>("x");
+type SettingsMenuRevealContextValue = {
+  isMobile: boolean;
+  direction: PanelNavigateDirection;
+};
+
+const SettingsMenuRevealContext = createContext<SettingsMenuRevealContextValue>({
+  isMobile: false,
+  direction: "forward",
+});
 
 type SettingsMenuRevealProviderProps = {
-  axis?: SettingsMenuRevealAxis;
+  isMobile: boolean;
+  direction: PanelNavigateDirection;
   children: ReactNode;
 };
 
 export function SettingsMenuRevealProvider({
-  axis = "x",
+  isMobile,
+  direction,
   children,
 }: SettingsMenuRevealProviderProps) {
   return (
-    <SettingsMenuRevealContext.Provider value={axis}>{children}</SettingsMenuRevealContext.Provider>
+    <SettingsMenuRevealContext.Provider value={{ isMobile, direction }}>
+      {children}
+    </SettingsMenuRevealContext.Provider>
   );
 }
 
-export function useSettingsMenuRevealAxis() {
-  return useContext(SettingsMenuRevealContext);
-}
-
 export function useSettingsMenuReveal() {
-  return getSettingsMenuReveal(useSettingsMenuRevealAxis());
-}
-
-export function useSettingsMenuRevealMotion() {
-  return getSettingsMenuRevealMotion(useSettingsMenuRevealAxis());
+  const { isMobile, direction } = useContext(SettingsMenuRevealContext);
+  return getMainMenuRevealMotion(isMobile, direction);
 }

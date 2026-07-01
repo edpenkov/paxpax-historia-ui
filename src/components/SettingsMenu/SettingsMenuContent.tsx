@@ -1,5 +1,9 @@
 import { DividerLine } from "@/components/DividerLine/DividerLine";
 import { SettingsMenuItem } from "@/components/SettingsMenu/SettingsMenuItem";
+import {
+  subSectionFromLabel,
+  type SettingsMenuSubSection,
+} from "@/components/SettingsMenu/settingsMenuSection";
 import { cn } from "@/lib/cn";
 
 const MENU_ITEMS = [
@@ -24,18 +28,28 @@ const LINK_ITEMS = [
 ] as const;
 
 type SettingsMenuContentProps = {
+  onOpenSection?: (section: SettingsMenuSubSection) => void;
   className?: string;
 };
 
-export function SettingsMenuContent({ className }: SettingsMenuContentProps) {
+export function SettingsMenuContent({ onOpenSection, className }: SettingsMenuContentProps) {
   return (
     <nav
       aria-label="Settings"
       className={cn("flex flex-col gap-4 pl-4 pr-1 pt-3 pb-5", className)}
     >
-      {MENU_ITEMS.map((item) => (
-        <SettingsMenuItem key={item.label} icon={item.icon} label={item.label} />
-      ))}
+      {MENU_ITEMS.map((item) => {
+        const subSection = subSectionFromLabel(item.label);
+
+        return (
+          <SettingsMenuItem
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            onClick={subSection ? () => onOpenSection?.(subSection) : undefined}
+          />
+        );
+      })}
 
       <DividerLine />
       {LINK_ITEMS.map((item) => (

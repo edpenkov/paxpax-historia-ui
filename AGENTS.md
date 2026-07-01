@@ -10,15 +10,15 @@ Parts of this repo are **placeholders** (static map image, mock data, etc.) — 
 src/
   app/              Next.js App Router — routes and root layout
   components/       Custom React components
-  lib/cn.ts         Class name utility (clsx + tailwind-merge)
   hooks/            Shared hooks (add as needed)
+  lib/              Utilities (cn, transitions, panelNavigation, panelShell, …)
 docs/reference/     Design screenshots — not imported by app code
 public/assets/      Static files served at /assets/*
 ```
 
 ## Dependencies in this repo
 
-Listed in `package.json`. Runtime deps used in code today: `next-themes`, `clsx`, `tailwind-merge`. `motion` is installed but not yet imported by any component.
+Listed in `package.json`. Runtime deps used in code today: `next-themes`, `clsx`, `tailwind-merge`, `motion`.
 
 ## Component organization
 
@@ -38,6 +38,24 @@ Listed in `package.json`. Runtime deps used in code today: `next-themes`, `clsx`
 - Font: Poppins via `next/font` (already in root layout)
 - `next-themes` with `attribute="class"` (provider wired; color tokens added per screen)
 - Use `cn()` from `@/lib/cn`
+
+## Panel patterns (drill-down panels)
+
+Expanding panels with in-panel navigation use **two independent libs** — do not merge their lifecycle or timing.
+
+| Lib | Role | Triggers |
+|-----|------|----------|
+| `@/lib/panelShell` | **Behavior** — shell width/height | open/close, `content` ↔ `viewport` height mode, window resize, content remeasure |
+| `@/lib/panelNavigation` | **Style** — forward/back slide | route changes only (forward vs back, X vs Y axis) |
+
+**Rules:**
+
+1. Shell size uses `useAnimatedPanelShell` + measured px height + `panelSizeTransitionClass`. Never drive height from slide direction.
+2. Page swaps use `usePanelNavigation` + `PanelNavigateView` (+ `PanelBreadcrumbs` when needed).
+3. Consumer-specific route types and labels stay in the feature folder (e.g. `SettingsMenu/settingsMenuSection.ts`); reuse the generic hooks/components from `lib/`.
+4. First reference implementation: `SettingsMenu` (desktop morph) + `MobileTopControls` (mobile dropdown).
+
+UI Kit → **Styles → Panel patterns** has brief discovery entries. Full contract lives here and in [HANDOFF.md](./HANDOFF.md#utilities-srclib).
 
 ## Repo-only files
 

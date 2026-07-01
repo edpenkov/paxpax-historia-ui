@@ -12,7 +12,7 @@ export const uiKitGroupOrder: Record<UiKitCategory, string[]> = {
     "Settings menu",
     "Map overlay",
   ],
-  styles: ["Surfaces", "Animations", "Hover states", "Interaction"],
+  styles: ["Surfaces", "Animations", "Panel patterns", "Hover states", "Interaction"],
   dev: ["Dev tools"],
 };
 
@@ -26,6 +26,8 @@ export const uiKitGroupDescriptions: Partial<Record<string, string>> = {
     "Below md. Top-left 89×44 control row; settings panel drops below (not a morphing trigger).",
   "Settings menu":
     "Shared panel content. Desktop trigger morphs in place; mobile opens from MobileTopControls.",
+  "Panel patterns":
+    "Reusable panel shell (size) vs in-panel navigation (slide style). Keep lifecycle separate.",
 };
 
 export type UiKitEntryGroup = {

@@ -3,15 +3,17 @@
 import { SettingsPanelIcon } from "@/components/SettingsMenu/SettingsPanelIcon";
 import { SettingsMenuPanelContent } from "@/components/SettingsMenu/SettingsMenuPanelContent";
 import { settingsTriggerHoverClass } from "@/components/SettingsMenu/settingsIconControlStyles";
+import type { SettingsMenuSection } from "@/components/SettingsMenu/settingsMenuSection";
 import {
   SETTINGS_MENU_PANEL_WIDTH_PX,
   useSettingsMenuPanel,
+  type SettingsMenuPanelHeightMode,
 } from "@/components/SettingsMenu/useSettingsMenuPanel";
 import { surfacePanelBaseClass } from "@/lib/surface";
 import { ICON_HITBOX_CLASS } from "@/lib/icon-hitbox";
 import { panelSizeTransitionClass } from "@/lib/transitions";
 import { cn } from "@/lib/cn";
-import type { CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 
 const TRIGGER_SIZE_PX = 34;
 
@@ -33,8 +35,27 @@ export function SettingsMenu({
   playAs,
   defaultOpen = false,
 }: SettingsMenuProps) {
-  const { contentRef, showPanel, isOpen, animatedHeight, open, close } =
-    useSettingsMenuPanel(defaultOpen, "desktop");
+  const [heightMode, setHeightMode] = useState<SettingsMenuPanelHeightMode>("content");
+  const [section, setSection] = useState<SettingsMenuSection>("main");
+
+  const handleSectionChange = useCallback((next: SettingsMenuSection) => {
+    setSection(next);
+    setHeightMode(next === "main" ? "content" : "viewport");
+  }, []);
+
+  const { contentRef, showPanel, isOpen, animatedHeight, open, close } = useSettingsMenuPanel(
+    defaultOpen,
+    "desktop",
+    heightMode,
+    section,
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      setHeightMode("content");
+      setSection("main");
+    }
+  }, [isOpen]);
 
   const panelWidth = isOpen ? SETTINGS_MENU_PANEL_WIDTH_PX : TRIGGER_SIZE_PX;
 
@@ -63,6 +84,7 @@ export function SettingsMenu({
             playAs={playAs}
             onClose={close}
             isVisible={isOpen}
+            onSectionChange={handleSectionChange}
           />
         ) : (
           <button

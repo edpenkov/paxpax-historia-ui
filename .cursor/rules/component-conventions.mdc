@@ -20,8 +20,19 @@ This repo is an early-stage UI reference for PaxPax Historia UI. Build in any or
 9. **No pre-built stubs** — add components only when building a real screen
 10. **Icon hit targets** — clickable icons use at least **24×24px** hitbox (`ICON_HITBOX_CLASS` from `@/lib/icon-hitbox`); icon graphic stays centered inside
 11. **Transitions** — use tokens from `@/lib/transitions` + CSS vars in `globals.css`; list in `variables.ts` for UI Kit
+12. **Panel patterns** — drill-down panels split **shell size** (`@/lib/panelShell`) from **page slides** (`@/lib/panelNavigation`). Shell reacts to layout context (open/close, height mode, resize); navigation reacts to route forward/back only. Never couple their timing — see AGENTS.md § Panel patterns
 
-## Placeholders
+## Panel patterns (detail)
+
+When building an expanding panel with internal drill-down:
+
+- **`useAnimatedPanelShell`** — `contentRef`, `animatedHeight`, open/close. Pair inner content with `panelSizeTransitionClass` and a **px** height (CSS cannot animate to `auto`).
+- **`usePanelNavigation` + `PanelNavigateView`** — route stack, direction, axis, slide variants. Use `fast` for sub-pages, `medium` for top-level swaps.
+- Feature-specific routes/labels stay in the consumer (e.g. `settingsMenuSection.ts`); extract to `lib/` only when a second panel needs the same hooks unchanged.
+- Reference: `SettingsMenu/` + `MobileTopControls/`.
+
+UI Kit lists both under **Styles → Panel patterns** for discovery only — not the full architecture doc.
+
 
 Many parts of this repo are **UI placeholders** — simplified stand-ins for layout and visuals, not production behavior.
 

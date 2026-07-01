@@ -40,8 +40,28 @@ export function SettingsPreview({ entryId, viewport }: { entryId: string; viewpo
 
     case "settings-menu-header":
       return (
-        <PreviewFrame className="w-full max-w-[420px] bg-background-primary p-0">
-          <SettingsMenuHeader onClose={() => undefined} />
+        <PreviewFrame className="w-full max-w-[420px] flex-col gap-6 bg-background-primary p-0">
+          <SettingsMenuHeader
+            section="main"
+            navDirection="forward"
+            isMobileLayout={false}
+            onNavigate={() => undefined}
+            onClose={() => undefined}
+          />
+          <SettingsMenuHeader
+            section="game-settings"
+            navDirection="forward"
+            isMobileLayout={false}
+            onNavigate={() => undefined}
+            onClose={() => undefined}
+          />
+          <SettingsMenuHeader
+            section="game-settings/advisor-ui"
+            navDirection="forward"
+            isMobileLayout={false}
+            onNavigate={() => undefined}
+            onClose={() => undefined}
+          />
         </PreviewFrame>
       );
 
@@ -178,11 +198,14 @@ export function SettingsStylePreview({
           <ReplayOnHover
             hint={
               viewport === "mobile"
-                ? "Hover to replay — slides in from above (y −10px)"
-                : "Hover to replay — slides in from left (x −10px)"
+                ? "Hover to replay — forward: y −10px, back: y +10px"
+                : "Hover to replay — forward: slides +X, back: slides −X"
             }
           >
-            <SettingsMenuRevealProvider axis={viewport === "mobile" ? "y" : "x"}>
+            <SettingsMenuRevealProvider
+              isMobile={viewport === "mobile"}
+              direction="forward"
+            >
               <SettingsMenuItem icon="Tutorial" label="Slide-in reveal" />
             </SettingsMenuRevealProvider>
           </ReplayOnHover>

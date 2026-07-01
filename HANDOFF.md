@@ -196,21 +196,19 @@ Reusable blurred dark region to darken/blur the map under UI. Portaled into z-[1
 
 `GameScreen` (client) owns map layer, prominence layer, and UI layer stacking.
 
-### `SettingsMenu/` (+ `SettingsMenuHeader`, `SettingsPanelIcon`)
+### `SettingsMenu/` (+ `MobileTopControls/`, panel content subtree)
 
-Settings panel (`src/components/SettingsMenu/`). Client component. **Desktop only** expand (`md+`).
+Settings panel (`src/components/SettingsMenu/`). Client components. Shared panel content for desktop and mobile.
 
-**Placement** (`page.tsx`): `absolute left-[14px] top-[68px] z-10` — 20px below 48px header, 14px from left.
+**Desktop** (`SettingsMenu.tsx`, `md+`): gear trigger morphs in place (34×34 → 420px wide). **Mobile** (`MobileTopControls.tsx`, below `md`): top-bar buttons + panel drops below.
 
-**Closed:** 34×34 `surfacePanelClass` trigger with gear icon.
+**Panel shell (behavior):** `useSettingsMenuPanel` → `useAnimatedPanelShell`. Main menu = content-driven height; sub-pages = viewport-locked height. Resizes on open/close, height mode, window resize — not on slide direction.
 
-**Open (desktop):** panel width **420px**, height **content-driven** (200ms width + height transition). `SettingsMenuHeader` + `SettingsMenuContent`.
+**In-panel navigation (style):** `usePanelNavigation` + `PanelNavigateView`. Forward/back X or Y slides between main menu, sub-sections, and nested pages. See `settingsMenuSection.ts` for route types and axis rules.
 
-**Menu content:** 12px below header divider, 16px left / 4px right padding, 20px bottom. Rows: 16×16 icon (50% opacity) + 24px gap + 16px label (90% opacity). 16px between rows. External-link arrow: vertically centered, 20px from panel right.
+**Open animation:** row reveal on first open (X-only via `SettingsMenuRevealProvider`); page slides on drill-down only.
 
-**Closed trigger hover:** 10% inset fill on the rounded panel shell. Gear icon 75% / 90% (dark), 100% on hover.
-
-**Close button:** 24×24 hitbox, same inset hover fill + icon opacity as gear (`settingsIconControlStyles.ts`).
+**Registry / UI Kit:** `SettingsMenu`, related icons, and **Panel patterns** utilities in `registry.ts`.
 
 ### `DividerLine/`
 
@@ -262,6 +260,24 @@ export const surfacePanelClass =
 
 Shared primary panel chrome — settings trigger, future modals/panels.
 
+### `transitions.ts`
+
+Motion and CSS transition tokens: `--duration-ui`, `--ease-ui`, `--reveal-offset`, `motionTransition`, `panelSizeTransitionClass`. UI Kit → Variables + Styles tabs.
+
+### `panelShell/` — panel size **behavior**
+
+`useAnimatedPanelShell` animates shell width/height when layout context changes: open/close, `content` vs `viewport` height mode, window resize, content remeasure (`ResizeObserver`).
+
+Independent of in-panel slide direction. Consumer example: `SettingsMenu/useSettingsMenuPanel.ts` (thin wrapper).
+
+### `panelNavigation/` — in-panel slide **style**
+
+`usePanelNavigation`, `PanelNavigateView`, `PanelBreadcrumbs`, `getPanelNavigateTransition` — forward/back X or Y slides when the route stack changes.
+
+Does not resize the shell. Consumer example: `SettingsMenu/SettingsMenuPanelContent.tsx`.
+
+**Do not couple** shell height timing to navigation direction — see [AGENTS.md](./AGENTS.md#panel-patterns-drill-down-panels).
+
 ---
 
 ## Static assets (`public/assets/`)
@@ -289,7 +305,7 @@ Screenshots and visual reference only. Mirror of some assets (e.g. `background.p
 |---------|------------|
 | `next-themes` | `ThemeProvider.tsx` |
 | `clsx`, `tailwind-merge` | `cn.ts` |
-| `motion` | Installed; not yet used in any component |
+| `motion` | Settings menu panel/navigation, prominence-free UI motion |
 | `next/font/google` | `layout.tsx` (Poppins) |
 
 Full list: `package.json`.
@@ -350,7 +366,9 @@ Details: [AGENTS.md](./AGENTS.md), `.cursor/rules/component-conventions.mdc`.
 | Map background | inside `GameScreen` | **Placeholder** — static `<img>`; production = live map |
 | Desktop header | `src/components/DesktopHeader/` | Desktop only (`md+`); 48px; logo cluster + `ProminenceAnchor` |
 | Mobile top controls | `src/components/MobileTopControls/` | Below `md`: `MobileTopBarButton` (left/right) + dropdown settings panel |
-| Settings menu | `src/components/SettingsMenu/` | Desktop morph trigger; `SettingsMenuItem` = button row or link row (`href`) |
+| Settings menu | `src/components/SettingsMenu/` | Desktop morph + shared panel content; drill-down via `panelNavigation` |
+| Panel shell lib | `src/lib/panelShell/` | Animated panel width/height (behavior) |
+| Panel navigation lib | `src/lib/panelNavigation/` | Forward/back page slides (style) |
 | Divider line | `src/components/DividerLine/` | `text-primary` at 10% opacity |
 | Dev theme toggle | `src/components/dev/DevThemeToggle.tsx` | Bottom-center Light/Dark (not game UI) |
 | UI Kit | `/ui-kit` + `src/lib/ui-kit/registry.ts` | Living component catalog for inspection |
@@ -372,8 +390,10 @@ page.tsx
   └── GameScreen.tsx
         ├── /assets/background.png (placeholder — static map stand-in)
         ├── DesktopHeader.tsx (md+)
-        ├── MobileTopControls.tsx (below md)
-        └── SettingsMenu.tsx (md+)
+        ├── SettingsMenu.tsx (md+ desktop morph)
+        │     └── SettingsMenuPanelContent.tsx → panelShell + panelNavigation
+        └── MobileTopControls.tsx (below md)
+              └── SettingsMenuPanelContent.tsx (shared)
 
 ui-kit/page.tsx
   └── UiKitView.tsx → registry.ts, src/components/dev/ui-kit/
@@ -387,3 +407,4 @@ ui-kit/page.tsx
 |------|--------|
 | 2026-06-29 | Initial foundation + GameScreen with `background.png` |
 | 2026-06-29 | Dev theme toggle, `/ui-kit` catalog, primary tokens, SettingsMenu |
+| 2026-06-29 | Settings drill-down, `panelShell` + `panelNavigation` libs, mobile settings panel |

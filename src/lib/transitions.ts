@@ -1,9 +1,12 @@
 /**
- * UI transition tokens. CSS mirror: `src/app/globals.css` (`--duration-ui`, `--ease-ui`, `--reveal-offset`).
+ * UI transition tokens. CSS mirror: `src/app/globals.css` (`--duration-ui-*`, `--ease-ui`, `--reveal-offset`).
  * UI Kit catalog: `src/lib/ui-kit/variables.ts` → `globalTransitionVariables`.
  */
 export const uiTransition = {
-  durationMs: 200,
+  durationMs: {
+    fast: 100,
+    medium: 200,
+  },
   cssEase: "ease",
   motionEase: "easeInOut" as const,
   revealOffsetPx: 10,
@@ -14,7 +17,15 @@ export const uiTransition = {
 export const panelSizeTransitionClass =
   "transition-[width,height,border-radius] duration-[var(--duration-ui)] ease-[var(--ease-ui)]";
 
-export const motionRevealTransition = {
-  duration: uiTransition.durationMs / 1000,
-  ease: uiTransition.motionEase,
-};
+export const motionTransition = {
+  fast: {
+    duration: uiTransition.durationMs.fast / 1000,
+    ease: uiTransition.motionEase,
+  },
+  medium: {
+    duration: uiTransition.durationMs.medium / 1000,
+    ease: uiTransition.motionEase,
+  },
+} as const;
+
+export type MotionTransitionSpeed = keyof typeof motionTransition;
